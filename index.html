@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Export</title>
+
+    <!-- Scale set to 1.0001 to address a bug in Safari on iOS 9.x -->
+    <meta name="viewport" content="initial-scale=1.0001, minimum-scale=1.0001, maximum-scale=1.0001, user-scalable=no" />
+
+    <!-- CSS -->
+    <link href="https://static.comecero.com/libraries/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/loading-bar.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
+    <!-- Pull in the app and account settings. These must come before any app bootstrapping. In local development, these are just static files. In the hosted environment, these files are supplied dynamically with "live" settings. -->
+    <script src="settings/app.js"></script>
+    <script src="settings/account.js"></script>
+
+    <!-- Load the base Angular framework   -->
+    <script src="https://static.comecero.com/libraries/angularjs/1.5.5/angular.min.js"></script>
+
+</head>
+
+<body ng-app="data-exporter">
+
+    <!-- A global header can be inserted here -->
+
+    <div class="container">
+        <ng-view autoscroll="true"></ng-view>
+    </div>
+
+    <!-- A global footer can be inserted here -->
+
+    <!-- Modules (CDN)  -->
+
+    <script src="https://static.comecero.com/libraries/angularjs/1.5.5/angular-animate.min.js"></script>
+    <script src="https://static.comecero.com/libraries/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="https://static.comecero.com/libraries/angularjs/1.5.5/angular-sanitize.min.js"></script>
+    <script src="dist/ui-bootstrap-tpls.min.js"></script>
+    <script src="dist/ui-bootstrap.min.js"></script>
+
+    <!-- Modules (Local)  -->
+    <script src="app/modules/loading-bar.min.js"></script>
+    <script src="app/modules/angular-gettext.min.js"></script>
+    <script src="app/modules/angular-scroll-min.js"></script>
+    <script src="app/modules/tmhDynamicLocale.js"></script>
+
+    <!-- Libraries (Local) -->
+    <script src="app/libraries/underscore.js"></script>
+
+    <!-- Utilities file. Needs to come before app.js -->    
+    <script src="app/utilities.js"></script>
+
+    <!-- Main Application File. Needs to come before run.js -->
+    <script src="app/app.js"></script>
+
+    <!-- Bootstrap the app -->
+    <script src="app/run.js"></script>
+
+    <!-- Shared -->
+
+    <script src="app/shared/factories.js"></script>
+    <script src="app/shared/directives.js"></script>
+    <script src="app/shared/filters.js"></script>
+    <script src="app/shared/services.js"></script>
+
+    <!-- Features -->
+    <script src="app/pages/rootController.js"></script>
+    <script src="dist/papaparse.min.js"></script>
+</body>
+</html>

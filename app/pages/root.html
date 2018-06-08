@@ -1,0 +1,96 @@
+﻿<div ng-controller="SettingsController">
+
+    <!-- Global Header -->
+    <nav class="navbar navbar-default">
+        <span class="navbar-brand">{{settings.app.company_name}} Data Exporter</span>
+    </nav>
+
+    <form name="form" novalidate>
+        <div class="alert alert-success" role="alert" ng-show="successMessage" ng-click="clearMessages()">
+            <p>{{successMessage}}</p>
+        </div>
+
+        <div class="alert alert-danger" role="alert" ng-show="error.message" ng-click="clearMessages()">
+            <h4 translate>Oops! We had a problem.</h4>
+            <p>{{error.message}}</p>
+            <span class="error-code" ng-if="error.reference">Error code: {{error.reference}}</span>
+        </div>
+
+        <div class="row form-group form-group-sm">
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+            <label class="control-label">Data Set</label>
+            <select class="form-control" ng-model="options.dataset">
+              <option value="orders">Orders</option>
+              <option value="invoices">Invoices</option>
+              <option value="payments">Payments</option>
+              <option value="refunds">Refunds</option>
+              <option value="fees">Fees</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row form-group form-group-sm">
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+            <label class="control-label">Dates</label>
+            <select class="form-control" ng-model="options.dates">
+              <option value="today">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="this_week">This Week</option>
+              <option value="last_week">Last Week</option>
+              <option value="last_7">Last 7 days</option>
+              <option value="this_month">This Month</option>
+              <option value="last_month">Last Month</option>
+              <option value="last_30">Last 30 days</option>
+              <option value="this_year">This Year</option>
+              <option value="last_year">Last Year</option>
+              <option value="custom">Custom Range</option>
+            </select>
+          </div>
+
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
+            <label class="control-label">Begin Date</label>
+            <div class="input-group dp">
+              <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_start" is-open="datepicker.status.date_start.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
+              <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_start')"><i class="fa fa-calendar"></i></span>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
+            <label class="control-label">End Date</label>
+            <div class="input-group dp">
+              <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_end" is-open="datepicker.status.date_end.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
+              <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_end')"><i class="fa fa-calendar"></i></span>
+            </div>
+          </div>
+
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-controller="TimezonesController">
+            <label class="control-label">Timezone</label>
+            <input type="text" class="form-control" name="timezone" ng-model="options.timezone" uib-typeahead="timezone as timezone for timezone in timezones | filter:$viewValue | limitTo:20" typeahead-editable="false" typeahead-min-length="0" required>
+          </div>
+        </div>
+
+        <div class="row form-group form-group-sm">
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+            <label class="control-label">Export Format</label>
+            <select class="form-control" ng-model="options.format">
+              <option value="csv">CSV</option>
+              <option value="json">Json</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row form-group form-group-sm">
+          <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+            <button ng-disabled="cancelFunc" type="button" class="btn btn-primary" ng-click="export()">
+              <span class="glyphicon glyphicon-export" aria-hidden="true"></span> Export</button>
+            <button ng-show="cancelFunc" type="button" class="btn btn-danger" ng-click="cancel()">
+              <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+          </div>
+        </div>
+
+        <!--Spacer-->
+        <div class="row">&nbsp;</div>
+
+    </form>
+
+</div>
