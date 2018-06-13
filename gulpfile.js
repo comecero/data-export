@@ -71,18 +71,13 @@ gulp.task('dist', function (done) {
 
 gulp.task('zip', function (done) {
     var json = JSON.parse(fs.readFileSync('./package.json'));
+    var version = json.version.trim();
 
-    // Read the version number
+    // Write the version number to version.html
     var version = fs.readFileSync("./version.html", "utf8").trim();
+    fs.writeFileSync("./version.html", version, {"encoding": "utf8"})
 
-    if (json.version != version) {
-      throw new gutil.PluginError({
-          plugin: 'zip',
-          message: 'version.html and package.json version do not match'
-        });
-    }
-
-    return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./settings/**", "!./settings/", "!./.gitattributes",
+    return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./.gitattributes", "!./settings/**", "!./settings/",
                      "!./.gitignore", "!./*.sln", "!./Web.config", "!./Web.Debug.config", "!./node_modules/**"])
       .pipe(zip("data-exporter-" + version + ".zip"))
       .pipe(gulp.dest("./"));
