@@ -1,11 +1,11 @@
 {
-  "name": "comecero-data-exporter",
+  "name": "comecero-data-export",
   "version": "0.9.2",
   "description": "A data export utility",
   "main": "index.html",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/comecero/data-exporter.git"
+    "url": "git+https://github.com/comecero/data-export.git"
   },
   "author": "Comecero, LLC",
   "license": "MIT",

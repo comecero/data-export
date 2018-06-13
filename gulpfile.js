@@ -21,8 +21,8 @@ gulp.task("papaparse", function () {
 
 // It is important that you include utilities.js first, run.js second and libraries/*.js third. After that, the order is not important.
 gulp.task("concat", function () {
-    return gulp.src(["./app/utilities.js", "./app/run.js", "./app/libraries/*.js", "./app/modules/*.js", "./app/shared/*.js"])
-      .pipe(concat("data-exporter.js"))
+    return gulp.src(["./app/utilities.js", "./app/app.js", "./app/run.js", "./app/libraries/*.js", "./app/modules/*.js", "./app/shared/*.js"])
+      .pipe(concat("data-export.js"))
       .pipe(gulp.dest("./dist/"));
 });
 
@@ -42,7 +42,7 @@ gulp.task("compress", function () {
 });
 
 gulp.task("sourcemap", function () {
-    return gulp.src(["./dist/data-exporter.js"])
+    return gulp.src(["./dist/data-export.js"])
     .pipe(sourcemaps.init())
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest("./dist/"));
@@ -53,17 +53,11 @@ gulp.task('dist', function (done) {
         var json = JSON.parse(fs.readFileSync('./package.json'));
 
         // Read the version number
-        var version = fs.readFileSync("./version.html", "utf8").trim();
-
-        if (json.version != version) {
-          throw new gutil.PluginError({
-              plugin: 'dist',
-              message: 'version.html and package.json version do not match'
-            });
-        }
+        var version = json.version;
+        fs.writeFileSync("./version.html", version, {"encoding": "utf8"})
 
         // Add headers with the release number to each of the distribution files.
-        gulp.src(['./dist/data-exporter.js', './dist/data-exporter.min.js', './dist/pages.js', './dist/pages.min.js']).pipe(header("/*\nComecero Data Exporter version: " + version + "\nhttps://comecero.com\nhttps://github.com/comecero/data-exporter\nCopyright Comecero and other contributors. Released under MIT license. See LICENSE for details.\n*/\n\n")).pipe(gulp.dest('./dist/'));
+        gulp.src(['./dist/data-export.js', './dist/data-export.min.js', './dist/pages.js', './dist/pages.min.js']).pipe(header("/*\nComecero Data Export version: " + json.version + "\nhttps://comecero.com\nhttps://github.com/comecero/data-export\nCopyright Comecero and other contributors. Released under MIT license. See LICENSE for details.\n*/\n\n")).pipe(gulp.dest('./dist/'));
         done();
 
     });
@@ -71,14 +65,16 @@ gulp.task('dist', function (done) {
 
 gulp.task('zip', function (done) {
     var json = JSON.parse(fs.readFileSync('./package.json'));
-    var version = json.version.trim();
-
-    // Write the version number to version.html
     var version = fs.readFileSync("./version.html", "utf8").trim();
-    fs.writeFileSync("./version.html", version, {"encoding": "utf8"})
+    if (json.version != version) {
+      throw new gutil.PluginError({
+          plugin: 'dist',
+          message: 'version.html and package.json version do not match'
+        });
+    }
 
     return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./.gitattributes", "!./settings/**", "!./settings/",
                      "!./.gitignore", "!./*.sln", "!./Web.config", "!./Web.Debug.config", "!./node_modules/**"])
-      .pipe(zip("data-exporter-" + version + ".zip"))
+      .pipe(zip("data-export-" + version + ".zip"))
       .pipe(gulp.dest("./"));
 });

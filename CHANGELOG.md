@@ -1,4 +1,10 @@
-﻿<a name="0.9.1"></a>
+﻿<a name="0.9.2"></a>
+# 0.9.2
+
+* Renamed package and wording to be "data export" instead of "data exporter"
+* Added filter functionality on status where applicable.
+
+<a name="0.9.1"></a>
 # 0.9.1
 
 Updated javascript dependencies to use static.comecero.com cdn and local paths.

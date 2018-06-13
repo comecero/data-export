@@ -1,7 +1,7 @@
 /*
-Comecero Data Exporter version: 0.9.1
+Comecero Data Export version: 0.9.2
 https://comecero.com
-https://github.com/comecero/data-exporter
+https://github.com/comecero/data-export
 Copyright Comecero and other contributors. Released under MIT license. See LICENSE for details.
 */
 
@@ -516,6 +516,100 @@ String.prototype.replaceAll = function (f, r) {
     return this.split(f).join(r);
 }
 
+var app = angular.module("data-export", ['ngRoute', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.bootstrap.tpls', 'angular-loading-bar', 'gettext', 'duScroll', 'tmh.dynamicLocale']);
+
+app.config(function ($httpProvider, $routeProvider, $locationProvider, $provide, cfpLoadingBarProvider, tmhDynamicLocaleProvider) {
+
+    // Configure the app routes
+    $routeProvider.when("/", { templateUrl: "app/pages/root.html", controller: "RootController" });
+
+    // Loading bar https://github.com/chieffancypants/angular-loading-bar A global loading bar when HTTP requests are being made so you don't have to manually trigger spinners on each ajax call.
+    cfpLoadingBarProvider.latencyThreshold = 300;
+    cfpLoadingBarProvider.includeSpinner = false;
+
+    // Dynamically load locale files
+    tmhDynamicLocaleProvider.localeLocationPattern("https://cdnjs.cloudflare.com/ajax/libs/angular-i18n/1.4.8/angular-locale_{{locale}}.js");
+
+});
+
+app.run(function ($rootScope) {
+
+    // There is another app.run function in run.js. This app.run is here for settings that apply to kit's direct implementation and wouldn't necessarily be done the same way by apps that consume kit.js.
+    // Only things that are not desirable to port into other apps should be here. Otherise you should use run.js.
+
+    // This defines the languages supported by the app. Each supported language must have an associated translation file in the languages folder. It ain't magic.
+    $rootScope.languages = [
+        {
+            code: "en",
+            name: "English"
+        },        
+        {
+            code: "cs",
+            name: "čeština"
+        },
+        {
+            code: "de",
+            name: "Deutsche"
+        },
+        {
+            code: "el",
+            name: "Ελληνικά"
+        },
+        {
+            code: "es",
+            name: "Español"
+        },                
+        {
+            code: "fi",
+            name: "Suomalainen"
+        },
+        {
+            code: "fr",
+            name: "français"
+        },            
+        {
+            code: "it",
+            name: "italiano"
+        },
+        {
+            code: "ja",
+            name: "日本語"
+        },
+        {
+            code: "ko",
+            name: "한국어"
+        },
+        {
+            code: "nl",
+            name: "Nederlands"
+        },
+        {
+            code: "pl",
+            name: "Polskie"
+        },
+        {
+            code: "pt",
+            name: "Português"
+        },
+        {
+            code: "ru",
+            name: "русский"
+        },            
+        {
+            code: "sv",
+            name: "svenska"
+        }
+    ]
+
+    // Analytics. Watch for route changes and load analytics accordingly.
+    $rootScope.$on('$locationChangeSuccess', function () {
+        if (window.__pageview && window.__pageview.recordPageLoad) {
+            window.__pageview.recordPageLoad();
+        }
+    });
+
+});
+
 // The following code needs to run after app.js and after utilities.js are loaded but before any directive, controller, etc. are run. This bootstraps the app at run time with the initial settings and configurations.
 
 app.run(function ($rootScope, $http, SettingsService, StorageService, LanguageService, ApiService) {
@@ -556,564 +650,351 @@ app.run(function ($rootScope, $http, SettingsService, StorageService, LanguageSe
 
     });
 
-var amazonPay = (function () {
 
-    var url = "https://static-na.payments-amazon.com/OffAmazonPayments/us/js/Widgets.js";
-    if (window.__settings.account.test) {
-        url = "https://static-na.payments-amazon.com/OffAmazonPayments/us/sandbox/js/Widgets.js";
+app.directive('updateStatusFields', function () {
+  var linkFn = function (scope, element, attrs) {
+    var defaultStatuses =  [
+      {'value': '', 'label': 'Any'},                // Export all
+      {'value': 'unpaid', 'label': 'Unpaid'},       // Used with Carts, Invoices
+      {'value': 'scheduled', 'label': 'scheduled'}, // Used with Invoices
+      {'value': 'initiated', 'label': 'initiated'}, // Used on Payments which are created but not authorized yet.
+      {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
+      {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
+      {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
+      {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
+      {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
+      {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
+    ];
+
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      switch(newValue) {
+        case 'orders':
+          scope.options.statusField = 'payment_status';
+          scope.options.status = 'completed';
+          scope.statusesLabel = 'Payment Status';
+          scope.statuses = [
+            {'value': '', 'label': 'Any'},                // Export all
+            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
+            {'value': 'refunded', 'label': 'refunded'}    // Used with Payments, Carts, Invoices, Orders
+          ];
+          break;
+        case 'invoices':
+          scope.options.statusField = 'payment_status';
+          scope.options.status = 'completed';
+          scope.statusesLabel = 'Payment Status';
+          scope.statuses = [
+            {'value': '', 'label': 'Any'},                // Export all
+            {'value': 'unpaid', 'label': 'Unpaid'},       // Used with Carts, Invoices
+            {'value': 'scheduled', 'label': 'scheduled'}, // Used with Invoices
+            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
+            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
+            {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
+            {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
+          ];
+          break;
+        case 'payments':
+          scope.options.statusField = 'status';
+          scope.options.status = 'completed';
+          scope.statusesLabel = 'Status';
+          scope.statuses = [
+            {'value': '', 'label': 'Any'},                // Export all
+            {'value': 'initiated', 'label': 'initiated'}, // Used on Payments which are created but not authorized yet.
+            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
+            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
+            {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
+            {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
+          ];
+          break;
+        case 'refunds':
+          scope.options.statusField = 'status';
+          scope.options.status = 'completed';
+          scope.statusesLabel = 'Status';
+          scope.statuses = [
+            {'value': '', 'label': 'Any'},                // Export all
+            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
+            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
+          ];
+          break;
+        default:
+          scope.options.statusField = '';
+          scope.options.status = '';
+          scope.statusLabel = '';
+          scope.statuses = [];
+      };
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
+
+app.factory('appCache', ['$cacheFactory', function ($cacheFactory) {
+  return $cacheFactory('appCache');
+}]);
+
+app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
+  var _cancel = function(scope) {
+    if (angular.isFunction(scope.cancelFunc)) {
+      scope.cancelFunc();
+      scope.cancelFunc = undefined;
+      return true;
     }
-
-    var access_token = null;
-    var order_reference_id = null;
-    var billing_agreement_id = null;
-    var loaded = false;
-    var consent_status = false;
-
-    var address_book;
-
-    // Load the Amazon Pay SDK, if available for this account.
-    if (isAvailable()) {
-        loadScript(url, function () {
-            loaded = true;
-        });
-    }
-
-    function createPaymentButton(client_id, seller_id, target_id, type, color, size, callback) {
-
-        // client_id: The Amazon Pay client ID
-        // seller_id: The Amazon Pay seller ID
-        // target_id: The id of the HTML element the button should be placed within
-        // type, color, size: Button customizations, see function code for possibilities
-        // callback(error, data): The function that is called when the button is created, data returns the access_token, which needs to be passed to the API when submitting the payment.
-
-        // Load the SDK, if not already loaded.
-        if (!loaded) {
-            loadScript(url, function () {
-                loaded = true;
-            });
-        }
-
-        // Run now if ready, otherwise wait till ready.
-        if (!window.amazon) {
-            window.onAmazonLoginReady = function () {
-                _createPaymentButton(target_id, type, color, size, callback);
+    return false;
+  }
+  return function(scope, options, datepicker) {
+      var deferred = $q.defer();
+      var url = buildRootUrl(options, datepicker);
+      var data = [];
+      scope.cancelFunc = scope.$watch(function() {
+        return url;
+      }, function(next) {
+        if (angular.isUndefined(next) || next == null) return;
+        ApiService.getList(next).then(
+          function(response) {
+            var d = response.data;
+            var next_page = d.next_page_url;
+            if (angular.isArray(d.data)) {
+              for (var i in d.data) {
+                data.push(d.data[i]);
+              }
             }
-        } else {
-            _createPaymentButton(target_id, type, color, size, callback);
-        }
-
-        function _createPaymentButton(target_id, type, color, size, callback) {
-
-            // Set the ids
-            amazon.Login.setClientId(client_id);
-            amazon.Login.setUseCookie(true);
-
-            // Create the payment button
-            OffAmazonPayments.Button(target_id, seller_id, {
-
-                // https://pay.amazon.com/us/developer/documentation/lpwa/201953980
-                type: type || "PwA", // "PwA", "Pay", "A"
-                color: color || "Gold", // "Gold", "LightGray", "DarkGray"
-                size: size || "medium", // "small", "medium", "large", "x-large"
-                authorization: function () {
-                    var loginOptions = { scope: 'profile payments:widget payments:shipping_address' };
-                    authRequest = amazon.Login.authorize(loginOptions, function (response) {
-                        access_token = response.access_token;
-                    });
-                },
-                onSignIn: function (orderReferenece) {
-
-                    // Return the order reference and the access token that was previously generated
-                    if (callback) {
-                        callback(null, { access_token: access_token, order_reference_id: null, billing_agreement_id: null, seller_id: seller_id });
-                    }
-                },
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay button.");
-                    console.log(error.getErrorMessage());
-                }
-
-            });
-        }
-    }
-
-    function loadWidgets(client_id, seller_id, requires_billing_agreement, address_id, wallet_id, consent_id, onAddressSelect, onPaymentMethodSelect, onConsentChange, design_mode, display_mode, callback) {
-
-        // client_id: The Amazon Pay client ID
-        // seller_id: The Amazon Pay seller ID
-        // requires_billing_agreement: indicates if the transaction requires establishing a billing agreement, which will generate a consent box for the user to select
-        // address_id: The id of the HTML element (div) that will hold the address widget
-        // wallet_id: The id of the HTML element (div) that will hold the wallet widget
-        // consent_id: The id of the HTML element (div) that will hold the consent widget in the case of establishing a billing agreement
-        // onAddressSelect: Fires when an address has been selected by the user
-        // onPaymentMethodSelect: Fires when a payment method has been selected by the user
-        // onConsentChange: Fires when the consent has been toggled by the user. A callback parameter of 'status' true / false indicates the state of the conset checkbox
-        // design_mode: Indicates the design mode of the widgets, 'responsive' is used if not provided.
-        // callback(error, data): The function that is called when the button is created, data returns an object that contains the access_token and the order_reference_id or billing_agreement_id, depending on establishment of a billing agreement
-
-        if (requires_billing_agreement) {
-            loadWidgetsWithBillingAgreement(seller_id, address_id, wallet_id, consent_id, design_mode, display_mode)
-        } else {
-            billing_agreement_id = null;
-            loadWidgetsWithoutBillingAgreement(seller_id, address_id, wallet_id, design_mode, display_mode)
-        }
-
-        function loadWidgetsWithoutBillingAgreement(seller_id, address_id, wallet_id, design_mode, display_mode) {
-            address_book = new OffAmazonPayments.Widgets.AddressBook({
-                sellerId: seller_id,
-                onOrderReferenceCreate: function (orderReference) {
-                    order_reference_id = orderReference.getAmazonOrderReferenceId();
-                },
-                onAddressSelect: function (data) {
-                    if (onAddressSelect) {
-                        onAddressSelect();
-                    }
-                },
-                display_mode: display_mode || "Edit",
-                design: { designMode: design_mode || "responsive" },
-                onReady: function (orderReference) {
-                    callback(null, { access_token: access_token, order_reference_id: order_reference_id, billing_agreement_id: null, seller_id: seller_id });
-                },
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay address book.");
-                    console.log(error.getErrorMessage());
-                }
-            }).bind(address_id);
-            wallet = new OffAmazonPayments.Widgets.Wallet({
-                sellerId: seller_id,
-                onPaymentSelect: function () {
-                    if (onPaymentMethodSelect) {
-                        onPaymentMethodSelect();
-                    }
-                },
-                display_mode: display_mode || "Edit",
-                design: {
-                    designMode: design_mode || "responsive"
-                },
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay wallet.");
-                    console.log(error.getErrorMessage());
-                }
-            }).bind(wallet_id);
-        }
-
-        function loadWidgetsWithBillingAgreement(seller_id, address_id, wallet_id, consent_id, design_mode, display_mode) {
-
-            var payload = {
-                sellerId: seller_id,
-                agreementType: "BillingAgreement",
-                onReady: function (billingAgreement) {
-                    billing_agreement_id = billingAgreement.getAmazonBillingAgreementId();
-                    wallet = new OffAmazonPayments.Widgets.Wallet({
-                        sellerId: seller_id,
-                        amazonBillingAgreementId: billing_agreement_id,
-                        onReady: function () {
-                            callback(null, { access_token: access_token, billing_agreement_id: billing_agreement_id, seller_id: seller_id });
-                        },
-                        onPaymentSelect: function (billingAgreement) {
-                            if (onPaymentMethodSelect) {
-                                onPaymentMethodSelect();
-                            }
-                            consent = new OffAmazonPayments.Widgets.Consent({
-                                sellerId: seller_id,
-                                amazonBillingAgreementId: billing_agreement_id,
-                                design: { designMode: design_mode || "responsive" },
-                                onReady: function (billingAgreementConsentStatus) {
-                                    if (billingAgreementConsentStatus.getConsentStatus) {
-                                        if (consent_status !== utils.stringToBool(billingAgreementConsentStatus.getConsentStatus())) {
-                                            consent_status = !consent_status;
-                                            if (onConsentChange) {
-                                                onConsentChange(consent_status);
-                                            }
-                                        }
-                                    }
-                                },
-                                onConsent: function (billingAgreementConsentStatus) {
-                                    if (consent_status !== utils.stringToBool(billingAgreementConsentStatus.getConsentStatus())) {
-                                        consent_status = !consent_status;
-                                        if (onConsentChange) {
-                                            onConsentChange(consent_status);
-                                        }
-                                    }
-                                },
-                                onError: function (error) {
-                                    callback("There was a problem attempting to load the Amazon Pay wallet.");
-                                    console.log(error.getErrorMessage());
-                                }
-                            }).bind(consent_id);
-                        },
-                        display_mode: display_mode || "Edit",
-                        design: { designMode: design_mode || "responsive" },
-                        onError: function (error) {
-                            callback("There was a problem attempting to load the Amazon Pay wallet.");
-                            console.log(error.getErrorMessage());
-                        }
-                    }).bind(wallet_id);
-                },
-                onAddressSelect: function (billingAgreement) {
-                    if (onAddressSelect) {
-                        onAddressSelect();
-                    }
-                },
-                display_mode: display_mode || "Edit",
-                design: { designMode: design_mode || "responsive" },
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay wallet.");
-                    console.log(error.getErrorMessage());
-                }
-            };
-            address_book = new OffAmazonPayments.Widgets.AddressBook(payload).bind(address_id);
-
-        }
-
-    }
-
-    function reRenderWidgets(client_id, seller_id, order_reference_id, billing_agreement_id, wallet_id, onPaymentMethodSelect, design_mode, callback) {
-
-        // seller_id: The Amazon Pay seller ID
-        // order_reference_id: The order_reference_id for the transaction. Required if billing_agreement_id is null.
-        // billing_agreement_id: The billing_agreement_id for the transaction. Required if order_reference_id is null.
-        // wallet_id: The id of the HTML element (div) that will hold the wallet widget.
-        // onPaymentMethodSelect: Fires when a payment method has been selected by the user.
-        // design_mode: Indicates the design mode of the widgets, 'responsive' is used if not provided.
-        // callback(error): The function that is called when the widget is refreshed, including a parameter 'error' that is populated if an error occurs when refreshing the widget.
-
-        amazon.Login.setClientId(client_id);
-        amazon.Login.setUseCookie(true);
-
-        if (billing_agreement_id) {
-            reRenderWidgetsWithBillingAgreement(seller_id, billing_agreement_id, wallet_id, onPaymentMethodSelect, callback);
-        } else {
-            reRenderWidgetsWithoutBillingAgreement(seller_id, order_reference_id, wallet_id, onPaymentMethodSelect, callback);
-        }
-
-        function reRenderWidgetsWithoutBillingAgreement(seller_id, order_reference_id, wallet_id, onPaymentMethodSelect, callback) {
-
-            new OffAmazonPayments.Widgets.Wallet({
-                sellerId: seller_id,
-
-                amazonOrderReferenceId: order_reference_id,
-
-                onPaymentSelect: function (orderReference) {
-                    if (onPaymentMethodSelect) {
-                        onPaymentMethodSelect();
-                    }
-                },
-                design: {
-                    designMode: design_mode || "responsive"
-                },
-
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay wallet.");
-                    console.log(error.getErrorMessage());
-                }
-            }).bind(wallet_id);
-
-        }
-
-        function reRenderWidgetsWithBillingAgreement(seller_id, billing_agreement_id, wallet_id, onPaymentMethodSelect, callback) {
-
-            new OffAmazonPayments.Widgets.Wallet({
-                sellerId: seller_id,
-
-                billingAgreementId: billing_agreement_id,
-
-                onPaymentSelect: function (orderReference) {
-                    if (onPaymentMethodSelect) {
-                        onPaymentMethodSelect();
-                    }
-                },
-                design: {
-                    designMode: design_mode || "responsive"
-                },
-
-                onError: function (error) {
-                    callback("There was a problem attempting to load the Amazon Pay wallet.");
-                    console.log(error.getErrorMessage());
-                }
-            }).bind(wallet_id);
-
-        }
-    }
-
-    function logout() {
-        access_token = null;
-        order_reference_id = null;
-        billing_agreement_id = null;
-
-        if (amazon) {
-            amazon.Login.logout();
-        }
-    }
-
-    function loadScript(url, callback) {
-        // Appends a script to the DOM
-        var head = document.getElementsByTagName("head")[0], done = false;
-        var script = document.createElement("script");
-        script.src = url;
-        script.type = "text/javascript";
-        script.async = 1;
-        // Attach handlers for all browsers
-        script.onload = script.onreadystatechange = function () {
-            if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
-                done = true;
-                // Initialize
-                if (typeof callback === 'function') callback();
+            if (angular.isUndefined(next_page) || next_page == null) {
+              deferred.resolve(data);
+              _cancel(scope);
+              return;
             }
-        };
-        head.appendChild(script);
-    }
+            url = next_page;
+          }, function(error) {
+            _cancel(scope);
+            deferred.reject(error);
+          }
+        );
+      });
+      return deferred.promise;
+    };
+  });
 
-    function isAvailable() {
-        // Indicates if Amazon Pay is an available payment method
-        if (window.__settings && window.__settings.account && window.__settings.account.payment_method_types.indexOf("amazon_pay") > -1) {
-            return true;
-        }
-        return false;
-    }
-
-    function showWidgets(address_id, wallet_id, consent_id, recurring) {
-
-        // Show the widgets
-        var addressWidget = document.getElementById(address_id);
-        var walletWidget = document.getElementById(wallet_id);
-        var consentWidget = document.getElementById(consent_id);
-
-        if (addressWidget)
-            addressWidget.style.display = null;
-
-        if (walletWidget)
-            walletWidget.style.display = null;
-
-        if (consentWidget && recurring)
-            consentWidget.style.display = null;
-    }
-
-    function hideWidgets(address_id, wallet_id, consent_id) {
-
-        // Hide the widgets
-        var addressWidget = document.getElementById(address_id);
-        var walletWidget = document.getElementById(wallet_id);
-        var consentWidget = document.getElementById(consent_id);
-
-        // Destroy the contents of each and then hide the element
-        if (addressWidget) {
-            addressWidget.style.display = "none";
-            addressWidget.innerHTML = "";
-        }
-
-        if (walletWidget) {
-            walletWidget.style.display = "none";
-            walletWidget.innerHTML = "";
-        }
-
-        if (consentWidget) {
-            consentWidget.style.display = "none";
-            consentWidget.innerHTML = "";
-        }
-
-    }
-
-    function getConsentStatus() {
-        return consent_status;
-    }
-
-    // Public API
-    return {
-        createPaymentButton: createPaymentButton,
-        loadWidgets: loadWidgets,
-        showWidgets: showWidgets,
-        hideWidgets: hideWidgets,
-        reRenderWidgets: reRenderWidgets,
-        logout: logout,
-        getConsentStatus: getConsentStatus
+app.factory('buildRootUrl', function($httpParamSerializer) {
+  return function(options, datepicker) {
+    var query = {
+      date_start: options.dates,
+      date_end: options.dates,
+      timezone: options.timezone
     };
 
-})();
-/* FileSaver.js
- * A saveAs() FileSaver implementation.
- * 1.3.0
- *
- * By Eli Grey, http://eligrey.com
- * License: MIT
- *   See https://github.com/eligrey/FileSaver.js/blob/master/LICENSE.md
- */
+    if (angular.isDefined(options.statusField) && angular.isDefined(options.status)) {
+      query[options.statusField] = options.status;
+    }
 
-/*global self */
-/*jslint bitwise: true, indent: 4, laxbreak: true, laxcomma: true, smarttabs: true, plusplus: true */
+    // Override if necessary
+    switch(options.dates) {
+      case "last_30":
+        query.date_start = -29;
+        query.date_end = 0;
+        break;
+      case "last_7":
+        query.date_start = -6;
+        query.date_end = 0;
+        break;
+      case "custom":
 
-/*! @source http://purl.eligrey.com/github/FileSaver.js/blob/master/FileSaver.js */
+        if (!datepicker.date_end) datepicker.date_end = new Date();
+        if (!datepicker.date_start) datepicker.date_start = datepicker.date_end;
 
-var saveAs = saveAs || (function(view) {
-	"use strict";
-	// IE <10 is explicitly unsupported
-	if (typeof view === "undefined" || typeof navigator !== "undefined" && /MSIE [1-9]\./.test(navigator.userAgent)) {
-		return;
-	}
-	var
-		  doc = view.document
-		  // only get URL when necessary in case Blob.js hasn't overridden it yet
-		, get_URL = function() {
-			return view.URL || view.webkitURL || view;
-		}
-		, save_link = doc.createElementNS("http://www.w3.org/1999/xhtml", "a")
-		, can_use_save_link = "download" in save_link
-		, click = function(node) {
-			var event = new MouseEvent("click");
-			node.dispatchEvent(event);
-		}
-		, is_safari = /constructor/i.test(view.HTMLElement)
-		, throw_outside = function(ex) {
-			(view.setImmediate || view.setTimeout)(function() {
-				throw ex;
-			}, 0);
-		}
-		, force_saveable_type = "application/octet-stream"
-		// the Blob API is fundamentally broken as there is no "downloadfinished" event to subscribe to
-		, arbitrary_revoke_timeout = 1000 * 40 // in ms
-		, revoke = function(file) {
-			var revoker = function() {
-				if (typeof file === "string") { // file is an object URL
-					get_URL().revokeObjectURL(file);
-				} else { // file is a File
-					file.remove();
-				}
-			};
-			setTimeout(revoker, arbitrary_revoke_timeout);
-		}
-		, dispatch = function(filesaver, event_types, event) {
-			event_types = [].concat(event_types);
-			var i = event_types.length;
-			while (i--) {
-				var listener = filesaver["on" + event_types[i]];
-				if (typeof listener === "function") {
-					try {
-						listener.call(filesaver, event || filesaver);
-					} catch (ex) {
-						throw_outside(ex);
-					}
-				}
-			}
-		}
-		, auto_bom = function(blob) {
-			// prepend BOM for UTF-8 XML and text/* types (including HTML)
-			// note: your browser will automatically convert UTF-16 U+FEFF to EF BB BF
-			if (/^\s*(?:text\/\S*|application\/xml|\S*\/\S*\+xml)\s*;.*charset\s*=\s*utf-8/i.test(blob.type)) {
-				return new Blob([String.fromCharCode(0xFEFF), blob], {type: blob.type});
-			}
-			return blob;
-		}
-		, FileSaver = function(blob, name, no_auto_bom) {
-			if (!no_auto_bom) {
-				blob = auto_bom(blob);
-			}
-			// First try a.download, then web filesystem, then object URLs
-			var
-				  filesaver = this
-				, type = blob.type
-				, force = type === force_saveable_type
-				, object_url
-				, dispatch_all = function() {
-					dispatch(filesaver, "writestart progress write writeend".split(" "));
-				}
-				// on any filesys errors revert to saving with object URLs
-				, fs_error = function() {
-					if (force && is_safari && view.FileReader) {
-						// Safari doesn't allow downloading of blob urls
-						var reader = new FileReader();
-						reader.onloadend = function() {
-							var base64Data = reader.result;
-							view.location.href = "data:attachment/file" + base64Data.slice(base64Data.search(/[,;]/));
-							filesaver.readyState = filesaver.DONE;
-							dispatch_all();
-						};
-						reader.readAsDataURL(blob);
-						filesaver.readyState = filesaver.INIT;
-						return;
-					}
-					// don't create more object URLs than needed
-					if (!object_url) {
-						object_url = get_URL().createObjectURL(blob);
-					}
-					if (force) {
-						view.location.href = object_url;
-					} else {
-						var opened = view.open(object_url, "_blank");
-						if (!opened) {
-							// Apple does not allow window.open, see https://developer.apple.com/library/safari/documentation/Tools/Conceptual/SafariExtensionGuide/WorkingwithWindowsandTabs/WorkingwithWindowsandTabs.html
-							view.location.href = object_url;
-						}
-					}
-					filesaver.readyState = filesaver.DONE;
-					dispatch_all();
-					revoke(object_url);
-				}
-			;
-			filesaver.readyState = filesaver.INIT;
+        query.date_start = datepicker.date_start.toISOString().substring(0, 10);
+        query.date_end = datepicker.date_end.toISOString().substring(0, 10);
+        break;
+    }
 
-			if (can_use_save_link) {
-				object_url = get_URL().createObjectURL(blob);
-				setTimeout(function() {
-					save_link.href = object_url;
-					save_link.download = name;
-					click(save_link);
-					dispatch_all();
-					revoke(object_url);
-					filesaver.readyState = filesaver.DONE;
-				});
-				return;
-			}
+    return '/' + options.dataset + '?' + $httpParamSerializer(query);
+  };
+});
 
-			fs_error();
-		}
-		, FS_proto = FileSaver.prototype
-		, saveAs = function(blob, name, no_auto_bom) {
-			return new FileSaver(blob, name || blob.name || "download", no_auto_bom);
-		}
-	;
-	// IE 10+ (native saveAs)
-	if (typeof navigator !== "undefined" && navigator.msSaveOrOpenBlob) {
-		return function(blob, name, no_auto_bom) {
-			name = name || blob.name || "download";
 
-			if (!no_auto_bom) {
-				blob = auto_bom(blob);
-			}
-			return navigator.msSaveOrOpenBlob(blob, name);
-		};
-	}
+app.factory('saveFile', function() {
+  return function(name, type, data) {
+    if (data != null && navigator.msSaveBlob)
+      return navigator.msSaveBlob(new Blob([data], { type: type }), name);
+    var a = angular.element("<a style='display: none;'/>");
+    var url = window.URL.createObjectURL(new Blob([data], {type: type}));
+    a.attr("href", url);
+    a.attr("download", name);
+    var body = angular.element(document).find('body').eq(0);
+    body.append(a);
+    a[0].click();
+    window.URL.revokeObjectURL(url);
+    a.remove();
+  };
+});
 
-	FS_proto.abort = function(){};
-	FS_proto.readyState = FS_proto.INIT = 0;
-	FS_proto.WRITING = 1;
-	FS_proto.DONE = 2;
+app.factory('toCSV', function() {
+  var mergeNestedObjects = function(parent) {
+    if (angular.isArray(parent) || !angular.isObject(parent)) return;
+    var keys = Object.keys(parent);
+    for (var k in keys) {
+      var key = keys[k];
+      mergeNestedObjects(parent[key]);
+    }
 
-	FS_proto.error =
-	FS_proto.onwritestart =
-	FS_proto.onprogress =
-	FS_proto.onwrite =
-	FS_proto.onabort =
-	FS_proto.onerror =
-	FS_proto.onwriteend =
-		null;
+    var keys1 = Object.keys(parent);
+    for (var k1 in keys1) {
+      var key1 = keys1[k1];
+      var value1 = parent[key1];
+      if (angular.isArray(value1) || !angular.isObject(value1)) continue;
+      var keys2 = Object.keys(value1);
+      for (var k2 in keys2) {
+        var key2 = keys2[k2];
+        var value2 = value1[key2];
+        parent[key1 + '.' + key2] = value2;
+      }
+      delete parent[key1];
+    }
+  };
 
-	return saveAs;
-}(
-	   typeof self !== "undefined" && self
-	|| typeof window !== "undefined" && window
-	|| this.content
-));
-// `self` is undefined in Firefox for Android content script context
-// while `this` is nsIContentFrameMessageManager
-// with an attribute `content` that corresponds to the window
+  var to_csv = function(data, options) {
+    var unraveled = [];
+    // Unravel items if present, otherwise just push object on to unraveled.
+    for (var i in data) {
+      var row = angular.copy(data[i]);
+      if (angular.isDefined(options.unravelField) && angular.isArray(row[options.unravelField])) {
+        var items = row[options.unravelField];
+        delete row[options.unravelField];
+        for (var j in items) {
+          var item = angular.copy(items[j]);
+          var keys = Object.keys(item);
+          for (var k in keys) {
+            var key = keys[k];
+            var value = item[key];
+            delete item[key];
+            item[ options.unravelField + '.' + key] = value;
+          }
+          unraveled.push(
+            angular.merge(item, row)
+          );
+        }
+      } else {
+        unraveled.push(row);
+      }
+    }
 
-if (typeof module !== "undefined" && module.exports) {
-  module.exports.saveAs = saveAs;
-} else if ((typeof define !== "undefined" && define !== null) && (define.amd !== null)) {
-  define([], function() {
-    return saveAs;
-  });
-}
+    // Merge nested objects
+    for (var i in unraveled) {
+      mergeNestedObjects(unraveled[i]);
+    }
+
+    // Remove nested arrays and/or api urls.
+    for (var i in unraveled) {
+      var row = unraveled[i];
+      var keys = Object.keys(row);
+      for (var j in Object.keys(row)) {
+        var key = keys[j];
+        if (angular.isArray(row[key]) || key.match(/object$/)) {
+          delete row[key];
+          continue;
+        }
+
+        if (angular.isString(row[key]) && row[key].match(/\/api\/v1\//)) {
+          delete row[key];
+          continue;
+        }
+      }
+    }
+
+    return Papa.unparse(unraveled);
+  };
+  return to_csv;
+});
+
+app.factory('toCSV', function() {
+  var mergeNestedObjects = function(parent) {
+    if (angular.isArray(parent) || !angular.isObject(parent)) return;
+    var keys = Object.keys(parent);
+    for (var k in keys) {
+      var key = keys[k];
+      mergeNestedObjects(parent[key]);
+    }
+
+    var keys1 = Object.keys(parent);
+    for (var k1 in keys1) {
+      var key1 = keys1[k1];
+      var value1 = parent[key1];
+      if (angular.isArray(value1) || !angular.isObject(value1)) continue;
+      var keys2 = Object.keys(value1);
+      for (var k2 in keys2) {
+        var key2 = keys2[k2];
+        var value2 = value1[key2];
+        parent[key1 + '.' + key2] = value2;
+      }
+      delete parent[key1];
+    }
+  };
+
+  var to_csv = function(data, options) {
+    var unraveled = [];
+    // Unravel items if present, otherwise just push object on to unraveled.
+    for (var i in data) {
+      var row = angular.copy(data[i]);
+      if (angular.isDefined(options.unravelField) && angular.isArray(row[options.unravelField])) {
+        var items = row[options.unravelField];
+        delete row[options.unravelField];
+        for (var j in items) {
+          var item = angular.copy(items[j]);
+          var keys = Object.keys(item);
+          for (var k in keys) {
+            var key = keys[k];
+            var value = item[key];
+            delete item[key];
+            item[ options.unravelField + '.' + key] = value;
+          }
+          unraveled.push(
+            angular.merge(item, row)
+          );
+        }
+      } else {
+        unraveled.push(row);
+      }
+    }
+
+    // Merge nested objects
+    for (var i in unraveled) {
+      mergeNestedObjects(unraveled[i]);
+    }
+
+    // Remove nested arrays and/or api urls.
+    for (var i in unraveled) {
+      var row = unraveled[i];
+      var keys = Object.keys(row);
+      for (var j in Object.keys(row)) {
+        var key = keys[j];
+        if (angular.isArray(row[key]) || key.match(/object$/)) {
+          delete row[key];
+          continue;
+        }
+
+        if (angular.isString(row[key]) && row[key].match(/\/api\/v1\//)) {
+          delete row[key];
+          continue;
+        }
+      }
+    }
+
+    return Papa.unparse(unraveled);
+  };
+  return to_csv;
+});
 
 //     Underscore.js 1.8.3
 //     http://underscorejs.org
@@ -6656,4 +6537,4 @@ app.service("StorageService", ['appCache', function (appCache) {
 
 }]);
 
-//# sourceMappingURL=data-exporter.js.map
+//# sourceMappingURL=data-export.js.map

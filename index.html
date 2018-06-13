@@ -1,7 +1,7 @@
 ﻿<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <title>Data Exporter</title>
+    <title>Data Export</title>
 
     <!-- Scale set to 1.0001 to address a bug in Safari on iOS 9.x -->
     <meta name="viewport" content="initial-scale=1.0001, minimum-scale=1.0001, maximum-scale=1.0001, user-scalable=no" />
@@ -21,7 +21,7 @@
 
 </head>
 
-<body ng-app="data-exporter">
+<body ng-app="data-export">
 
     <!-- A global header can be inserted here -->
 
@@ -45,26 +45,12 @@
     <script src="app/modules/angular-scroll-min.js"></script>
     <script src="app/modules/tmhDynamicLocale.js"></script>
 
-    <!-- Libraries (Local) -->
-    <script src="app/libraries/underscore.js"></script>
-
-    <!-- Utilities file. Needs to come before app.js -->    
-    <script src="app/utilities.js"></script>
-
-    <!-- Main Application File. Needs to come before run.js -->
-    <script src="app/app.js"></script>
-
-    <!-- Bootstrap the app -->
-    <script src="app/run.js"></script>
-
     <!-- Shared -->
 
-    <script src="app/libraries/factories.js"></script>
-    <script src="app/libraries/directives.js"></script>
-    <script src="app/shared/services.js"></script>
+    <script src="dist/data-export.js"></script>
 
     <!-- Features -->
-    <script src="app/pages/rootController.js"></script>
+    <script src="dist/pages.js"></script>
     <script src="dist/papaparse.min.js"></script>
 </body>
 </html>
