@@ -21,14 +21,8 @@ gulp.task("papaparse", function () {
 
 // It is important that you include utilities.js first, run.js second and libraries/*.js third. After that, the order is not important.
 gulp.task("concat", function () {
-    return gulp.src(["./app/utilities.js", "./app/app.js", "./app/run.js", "./app/libraries/*.js", "./app/modules/*.js", "./app/shared/*.js"])
+    return gulp.src(["./app/modules/*.js", "./app/utilities.js", "./app/app.js", "./app/run.js", "./app/libraries/*.js", "./app/shared/*.js", "./app/pages/**/*.js"])
       .pipe(concat("data-export.js"))
-      .pipe(gulp.dest("./dist/"));
-});
-
-gulp.task("concat-pages-js", function () {
-    return gulp.src(["./app/pages/**/*.js"])
-      .pipe(concat("pages.js"))
       .pipe(gulp.dest("./dist/"));
 });
 
@@ -49,7 +43,7 @@ gulp.task("sourcemap", function () {
 });
 
 gulp.task('dist', function (done) {
-    sequence('angularui', 'papaparse', 'concat', 'concat-pages-js', 'compress', 'sourcemap', function () {
+    sequence('angularui', 'papaparse', 'concat', 'compress', 'sourcemap', function () {
         var json = JSON.parse(fs.readFileSync('./package.json'));
 
         // Read the version number
