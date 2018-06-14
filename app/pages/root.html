@@ -7,30 +7,30 @@
 
     <form name="form" novalidate>
         <div class="alert alert-success" role="alert" ng-show="successMessage" ng-click="clearMessages()">
-          <p>{{successMessage}}</p>
+          <p translate>{{successMessage}}</p>
         </div>
 
         <div class="alert alert-danger" role="alert" ng-show="error.message" ng-click="clearMessages()">
-          <p>{{error.message}}</p>
-          <span class="error-code" ng-if="error.reference">Error code: {{error.reference}}</span>
+          <p translate>{{error.message}}</p>
+          <span class="error-code" ng-if="error.reference" translate>Error code: {{error.reference}}</span>
         </div>
 
         <div class="row form-group form-group-sm">
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-            <label class="control-label">Data Set</label>
+            <label class="control-label" translate>Data Set</label>
             <select class="form-control" ng-model="options.dataset">
-              <option value="orders">Orders</option>
-              <option value="invoices">Invoices</option>
-              <option value="payments">Payments</option>
-              <option value="refunds">Refunds</option>
-              <option value="fees">Fees</option>
+              <option value="orders" translate>Orders</option>
+              <option value="invoices" translate>Invoices</option>
+              <option value="payments" translate>Payments</option>
+              <option value="refunds" translate>Refunds</option>
+              <option value="fees" translate>Fees</option>
             </select>
           </div>
           <div update-status-fields class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
             <div ng-if="statuses.length" >
               <label class="control-label">{{statusesLabel}}</label>
               <select class="form-control" ng-model="options.status">
-                <option ng-repeat="option in statuses" value="{{option.value}}">{{option.label}}</option>
+                <option ng-repeat="option in statuses" value="{{option.value}}" translate>{{option.label}}</option>
               </select>
             </div>
           </div>
@@ -40,22 +40,22 @@
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
             <label class="control-label">Dates</label>
             <select class="form-control" ng-model="options.dates">
-              <option value="today">Today</option>
-              <option value="yesterday">Yesterday</option>
-              <option value="this_week">This Week</option>
-              <option value="last_week">Last Week</option>
-              <option value="last_7">Last 7 days</option>
-              <option value="this_month">This Month</option>
-              <option value="last_month">Last Month</option>
-              <option value="last_30">Last 30 days</option>
-              <option value="this_year">This Year</option>
-              <option value="last_year">Last Year</option>
-              <option value="custom">Custom Range</option>
+              <option value="today" translate>Today</option>
+              <option value="yesterday" translate>Yesterday</option>
+              <option value="this_week" translate>This Week</option>
+              <option value="last_week" translate>Last Week</option>
+              <option value="last_7" translate>Last 7 days</option>
+              <option value="this_month" translate>This Month</option>
+              <option value="last_month" translate>Last Month</option>
+              <option value="last_30" translate>Last 30 days</option>
+              <option value="this_year" translate>This Year</option>
+              <option value="last_year" translate>Last Year</option>
+              <option value="custom" translate>Custom Range</option>
             </select>
           </div>
 
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
-            <label class="control-label">Begin Date</label>
+            <label class="control-label" translate>Begin Date</label>
             <div class="input-group dp">
               <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_start" is-open="datepicker.status.date_start.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
               <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_start')"><i class="fa fa-calendar"></i></span>
@@ -63,7 +63,7 @@
           </div>
 
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-show="options.dates == 'custom'">
-            <label class="control-label">End Date</label>
+            <label class="control-label" translate>End Date</label>
             <div class="input-group dp">
               <input type="text" class="form-control" uib-datepicker-popup="yyyy-MM-dd" ng-model="datepicker.date_end" is-open="datepicker.status.date_end.opened" datepicker-options="datepicker.options" ng-model-options="{timezone: 'utc'}" close-text="Close" />
               <span class="input-group-addon pointer" ng-click="datepicker.open($event, 'date_end')"><i class="fa fa-calendar"></i></span>
@@ -71,26 +71,26 @@
           </div>
 
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10" ng-controller="TimezonesController">
-            <label class="control-label">Timezone</label>
+            <label class="control-label" translate>Timezone</label>
             <input type="text" class="form-control" name="timezone" ng-model="options.timezone" uib-typeahead="timezone as timezone for timezone in timezones | filter:$viewValue | limitTo:20" typeahead-editable="false" typeahead-min-length="0" required>
           </div>
         </div>
 
         <div class="row form-group form-group-sm">
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-            <label class="control-label">Export Format</label>
+            <label class="control-label" translate>Export Format</label>
             <select class="form-control" ng-model="options.format">
-              <option value="csv">CSV</option>
-              <option value="json">Json</option>
+              <option value="csv" translate>CSV</option>
+              <option value="json" translate>Json</option>
             </select>
           </div>
         </div>
 
         <div class="row form-group form-group-sm">
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-            <button ng-disabled="cancelFunc" type="button" class="btn btn-primary" ng-click="export()">
+            <button ng-disabled="cancelFunc" type="button" class="btn btn-primary" ng-click="export()" translate>
               <span class="glyphicon glyphicon-export" aria-hidden="true"></span> Export</button>
-            <button ng-show="cancelFunc" type="button" class="btn btn-danger" ng-click="cancel()">
+            <button ng-show="cancelFunc" type="button" class="btn btn-danger" ng-click="cancel()" translate>
               <span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
           </div>
         </div>
