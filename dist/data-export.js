@@ -720,7 +720,7 @@ String.prototype.replaceAll = function (f, r) {
     return this.split(f).join(r);
 }
 
-var app = angular.module("data-export", ['ngRoute', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.bootstrap.tpls', 'angular-loading-bar', 'gettext', 'duScroll', 'tmh.dynamicLocale']);
+var app = angular.module("data-export", ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngFileSaver', 'ui.bootstrap', 'ui.bootstrap.tpls', 'angular-loading-bar', 'gettext', 'duScroll', 'tmh.dynamicLocale']);
 
 app.config(function ($httpProvider, $routeProvider, $locationProvider, $provide, cfpLoadingBarProvider, tmhDynamicLocaleProvider) {
 
@@ -1028,19 +1028,10 @@ app.factory('buildRootUrl', function($httpParamSerializer) {
 });
 
 
-app.factory('saveFile', function() {
-  return function(name, type, data) {
-    if (data != null && navigator.msSaveBlob)
-      return navigator.msSaveBlob(new Blob([data], { type: type }), name);
-    var a = angular.element("<a style='display: none;'/>");
-    var url = window.URL.createObjectURL(new Blob([data], {type: type}));
-    a.attr("href", url);
-    a.attr("download", name);
-    var body = angular.element(document).find('body').eq(0);
-    body.append(a);
-    a[0].click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+app.factory('saveFile', function(FileSaver, Blob) {
+  return function(name, type, text) {
+    var data = new Blob([text], { type: type });
+    FileSaver.saveAs(data, name);
   };
 });
 

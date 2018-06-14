@@ -25,6 +25,7 @@
     "run-sequence": "1.2.2",
     "grunt": "1.0.1",
     "angular-ui-bootstrap": "2.5.0",
-    "papaparse": "4.5.0"
+    "papaparse": "4.5.0",
+    "angular-file-saver": "1.1.3"
   }
 }

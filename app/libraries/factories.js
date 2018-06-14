@@ -81,19 +81,10 @@ app.factory('buildRootUrl', function($httpParamSerializer) {
 });
 
 
-app.factory('saveFile', function() {
-  return function(name, type, data) {
-    if (data != null && navigator.msSaveBlob)
-      return navigator.msSaveBlob(new Blob([data], { type: type }), name);
-    var a = angular.element("<a style='display: none;'/>");
-    var url = window.URL.createObjectURL(new Blob([data], {type: type}));
-    a.attr("href", url);
-    a.attr("download", name);
-    var body = angular.element(document).find('body').eq(0);
-    body.append(a);
-    a[0].click();
-    window.URL.revokeObjectURL(url);
-    a.remove();
+app.factory('saveFile', function(FileSaver, Blob) {
+  return function(name, type, text) {
+    var data = new Blob([text], { type: type });
+    FileSaver.saveAs(data, name);
   };
 });
 

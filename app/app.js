@@ -1,4 +1,4 @@
-﻿var app = angular.module("data-export", ['ngRoute', 'ngAnimate', 'ngSanitize', 'ui.bootstrap', 'ui.bootstrap.tpls', 'angular-loading-bar', 'gettext', 'duScroll', 'tmh.dynamicLocale']);
+﻿var app = angular.module("data-export", ['ngRoute', 'ngAnimate', 'ngSanitize', 'ngFileSaver', 'ui.bootstrap', 'ui.bootstrap.tpls', 'angular-loading-bar', 'gettext', 'duScroll', 'tmh.dynamicLocale']);
 
 app.config(function ($httpProvider, $routeProvider, $locationProvider, $provide, cfpLoadingBarProvider, tmhDynamicLocaleProvider) {
 

@@ -19,6 +19,11 @@ gulp.task("papaparse", function () {
       .pipe(gulp.dest("./dist/"));
 });
 
+gulp.task("angularfilesaver", function () {
+    return gulp.src(["./node_modules/angular-file-saver/dist/angular-file-saver.bundle.min.js"])
+      .pipe(gulp.dest("./dist/"));
+});
+
 // It is important that you include utilities.js first, run.js second and libraries/*.js third. After that, the order is not important.
 gulp.task("concat", function () {
     return gulp.src(["./app/modules/*.js", "./app/utilities.js", "./app/app.js", "./app/run.js", "./app/libraries/*.js", "./app/shared/*.js", "./app/pages/**/*.js"])
@@ -43,7 +48,7 @@ gulp.task("sourcemap", function () {
 });
 
 gulp.task('dist', function (done) {
-    sequence('angularui', 'papaparse', 'concat', 'compress', 'sourcemap', function () {
+    sequence('angularui', 'angularfilesaver', 'papaparse', 'concat', 'compress', 'sourcemap', function () {
         var json = JSON.parse(fs.readFileSync('./package.json'));
 
         // Read the version number
