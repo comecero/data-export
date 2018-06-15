@@ -1,5 +1,5 @@
 /*
-Comecero Data Export version: 0.9.2
+Comecero Data Export version: 0.9.2d
 https://comecero.com
 https://github.com/comecero/data-export
 Copyright Comecero and other contributors. Released under MIT license. See LICENSE for details.
