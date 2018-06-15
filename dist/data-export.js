@@ -3294,13 +3294,16 @@ app.controller("TimezonesController", function($scope, TimezonesService) {
 app.controller("RootController",
   function ($scope, ApiService, $q, toCSV, saveFile, buildRootUrl, fetchData, SettingsService) {
     var settings = SettingsService.get();
-    if (angular.isUndefined(settings.timezone)) settings.timezone = 'UTC';
+    if (angular.isUndefined(settings.app.timezone) || settings.app.timezone.length <= 0)
+      settings.app.timezone = 'UTC';
+    if (angular.isUndefined(settings.app.company_name) || settings.app.company_name.length <= 0)
+      settings.app.company_name = settings.account.company_name;
 
     // Set defaults
     $scope.options = {
       dataset: 'orders',
       format: 'csv',
-      timezone: settings.timezone,
+      timezone: settings.app.timezone,
       dates: "last_30",
       unravelFields: [{id: 'items', name: 'Items'}],
       unravelField: 'items'
