@@ -11,6 +11,10 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
     }
     return false;
   }
+  var fetchNested = function(row, options) {
+    var deferred = $q.defer();
+    return deferred.promise;
+  }
   return function(scope, options, datepicker) {
       var deferred = $q.defer();
       var url = buildRootUrl(options, datepicker);
@@ -54,6 +58,12 @@ app.factory('buildRootUrl', function($httpParamSerializer) {
 
     if (angular.isDefined(options.statusField) && angular.isDefined(options.status)) {
       query[options.statusField] = options.status;
+    }
+
+    if (angular.isArray(options.expand) && options.expand.length) {
+      query['expand'] = options.expand.join(',');
+    } else if (angular.isString(options.expand) && options.expand.length) {
+      query['expand'] = options.expand;
     }
 
     // Override if necessary

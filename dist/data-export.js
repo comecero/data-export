@@ -1,5 +1,5 @@
 /*
-Comecero Data Export version: 0.9.2d
+Comecero Data Export version: 0.9.3
 https://comecero.com
 https://github.com/comecero/data-export
 Copyright Comecero and other contributors. Released under MIT license. See LICENSE for details.
@@ -855,6 +855,45 @@ app.run(function ($rootScope, $http, SettingsService, StorageService, LanguageSe
     });
 
 
+app.directive('updateIncludeFields', function () {
+  var linkFn = function (scope, element, attrs) {
+    var availableIncludes =  {
+      payments: [
+        {'value': '', 'label': 'None'},
+        {'value': 'fee_summary', 'label': 'Fee Summary'},
+      ],
+      refunds: [
+        {'value': '', 'label': 'None'},
+        {'value': 'fee_summary', 'label': 'Fee Summary'},
+      ],
+      orders: [
+        {'value': '', 'label': 'None'},
+        {'value': 'customer', 'label': 'Customer'},
+      ],
+      invoices: [
+        {'value': '', 'label': 'None'},
+        {'value': 'customer', 'label': 'Customer'},
+      ]
+    };
+
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      scope.includes = [];
+      scope.options.expand = '';
+      if (angular.isDefined(availableIncludes[newValue])) {
+        scope.includes = availableIncludes[newValue];
+      }
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [
@@ -958,6 +997,10 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
     }
     return false;
   }
+  var fetchNested = function(row, options) {
+    var deferred = $q.defer();
+    return deferred.promise;
+  }
   return function(scope, options, datepicker) {
       var deferred = $q.defer();
       var url = buildRootUrl(options, datepicker);
@@ -1001,6 +1044,12 @@ app.factory('buildRootUrl', function($httpParamSerializer) {
 
     if (angular.isDefined(options.statusField) && angular.isDefined(options.status)) {
       query[options.statusField] = options.status;
+    }
+
+    if (angular.isArray(options.expand) && options.expand.length) {
+      query['expand'] = options.expand.join(',');
+    } else if (angular.isString(options.expand) && options.expand.length) {
+      query['expand'] = options.expand;
     }
 
     // Override if necessary

@@ -26,11 +26,19 @@
               <option value="fees" translate>Fees</option>
             </select>
           </div>
-          <div update-status-fields class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-            <div ng-if="statuses.length" >
-              <label class="control-label">{{statusesLabel}}</label>
+          <div update-status-fields>
+            <div ng-if="statuses.length" class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+              <label class="control-label" translate>{{statusesLabel}}</label>
               <select class="form-control" ng-model="options.status">
                 <option ng-repeat="option in statuses" value="{{option.value}}" translate>{{option.label}}</option>
+              </select>
+            </div>
+          </div>
+          <div update-include-fields>
+            <div ng-if="includes.length" class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+              <label class="control-label" translate>Include</label>
+              <select class="form-control" ng-model="options.expand">
+                <option ng-repeat="option in includes" value="{{option.value}}" translate>{{option.label}}</option>
               </select>
             </div>
           </div>
@@ -38,7 +46,7 @@
 
         <div class="row form-group form-group-sm">
           <div class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-            <label class="control-label">Dates</label>
+            <label class="control-label" translate>Dates</label>
             <select class="form-control" ng-model="options.dates">
               <option value="today" translate>Today</option>
               <option value="yesterday" translate>Yesterday</option>

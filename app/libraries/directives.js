@@ -1,4 +1,43 @@
 ﻿
+app.directive('updateIncludeFields', function () {
+  var linkFn = function (scope, element, attrs) {
+    var availableIncludes =  {
+      payments: [
+        {'value': '', 'label': 'None'},
+        {'value': 'fee_summary', 'label': 'Fee Summary'},
+      ],
+      refunds: [
+        {'value': '', 'label': 'None'},
+        {'value': 'fee_summary', 'label': 'Fee Summary'},
+      ],
+      orders: [
+        {'value': '', 'label': 'None'},
+        {'value': 'customer', 'label': 'Customer'},
+      ],
+      invoices: [
+        {'value': '', 'label': 'None'},
+        {'value': 'customer', 'label': 'Customer'},
+      ]
+    };
+
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      scope.includes = [];
+      scope.options.expand = '';
+      if (angular.isDefined(availableIncludes[newValue])) {
+        scope.includes = availableIncludes[newValue];
+      }
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [

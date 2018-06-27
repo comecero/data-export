@@ -73,7 +73,7 @@ gulp.task('zip', function (done) {
     }
 
     return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./.gitattributes", "!./settings/**", "!./settings/",
-                     "!./.gitignore", "!./*.sln", "!./Web.config", "!./Web.Debug.config", "!./node_modules/**"])
+                     "!./*.zip", "!./.gitignore", "!./*.sln", "!./Web.config", "!./Web.Debug.config", "!./node_modules/**"])
       .pipe(zip("data-export-" + version + ".zip"))
       .pipe(gulp.dest("./"));
 });
