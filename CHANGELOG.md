@@ -2,10 +2,10 @@
 # 0.9.3
 
 * Added ability to include sub resources via the expand API query parameter
- * Orders can include Customer
- * Invoices can include Customer
- * Payments can include Fee Summary
- * Refunds can include Fee Summary
+    * Orders can include Customer
+    * Invoices can include Customer
+    * Payments can include Fee Summary
+    * Refunds can include Fee Summary
 
 <a name="0.9.2"></a>
 # 0.9.2
