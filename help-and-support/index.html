@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" ng-app="gettingStarted">
+<head>
+    <title ng-bind="title">Comecero Data Export Help and Support</title>
+
+    <!-- Scale set to 1.0001 to address a bug in Safari on iOS 9.x -->
+    <meta name="viewport" content="initial-scale=1.0001, minimum-scale=1.0001, maximum-scale=1.0001, user-scalable=no" />
+
+    <link rel="icon" type="image/png" href="//comecero.com/images/favicon-32x32.png" sizes="32x32">
+    <link rel="icon" type="image/png" href="//comecero.com/images/favicon-16x16.png" sizes="16x16">
+
+    <!-- CSS -->
+    <link href="https://static.comecero.com/libraries/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://static.comecero.com/libraries/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        body {
+            font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size: 14px;
+            line-height: 1.42857143;
+            color: #333;
+            background-color: #fff;
+        }
+
+        .page-header {
+            padding-bottom: 9px;
+            margin: 40px 0 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        pre code {
+            white-space: unset;
+        }
+
+        .pointer {
+            cursor: pointer;
+        }
+
+        .help {
+            font-style: italic;
+            font-size: 90%;
+        }
+
+        h3 {
+            margin-top: 50px;
+        }
+
+        .label-lg {
+            font-size: 14px;
+            margin: 10px 4px 4px 0;
+            display: inline-block;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="container">
+      <div class="row">
+          <div class="col-lg-12">
+              <div class="page-header">
+                  <h1 id="typography">Using Data Export</h1>
+              </div>
+          </div>
+      </div>
+
+      <p>Using Data Export is an easy way to get data extracted from your commecero account without having to interact with Comecero's powerful API.</p>
+
+      <div>
+          <h3>App Settings</h3>
+          <hr />
+          <ul>
+            <li>App Location - Realative URL path for this application. Default is /data-export</li>
+            <li>Company Name - Company Name that will appear at the top of the Data Export page. If blank, will use Company Name from your account settings.</li>
+            <li>Default Timezone - Allows you to change the default timezone for date times in the export. Default is UTC.</li>
+          </ul>
+      </div>
+
+      <div>
+        <h3>General Usage</h3>
+        <hr />
+        <p>Usage is pretty simple. Select the Data Set, Dates, and Export Format you would like to export.  Other options to vary the export is "Include"
+        subresources (Where available), Status (where available), and Export Format.  Then simply click "Export."</p>
+      </div>
+
+      <div>
+        <h3>Limitations</h3>
+        <hr />
+        <p>CSV exports are limited due to complex data structures returned in the API.  Some attempt to "flatten" data results has been made,
+        When exporting Orders and Invoices, each CSV row is actually at the item level instead of the order level.  This means that order level data will
+        be duplicated and specifically data that is numeric will not sum up correctly so be careful on how you use that data since it will not match the
+        reporting tools within the comecero admin UI.</p>
+      </div>
+
+      <div>
+        <h3>Code Availability</h3>
+        <hr />
+        <p>Code is available on <a target="github" href="https://github.com/comecero/data-export">github</a> for you to customize, upload, and run
+        in your accounts. If this tool does not suit your needs, or you will like to contribute, it is free to do so.
+      </div>
+
+      <div>
+        <h3>Bugs & Enhancements Requests</h3>
+        <hr />
+        If you feel that you have found a bug or would like additional enhancements, you can do so by creating an issue in the
+        <a target="github" href="https://github.com/comecero/data-export/issues">github issues</a> section of the code repository.  Please look
+        through current open issues before submitting a new issue. If you find an existing issue, please watch, or comment on, the issue so we
+        can get as much feedback on the tool as possible.  If you are unfamilar with github, or do not wish to create an account, please contact
+        your Comecero Account Representive for assistance.
+      </div>
+
+      <div class="spacer-b20">&nbsp;</div>
+    </div>
+  </div>
+</body>
+</html>
