@@ -1,5 +1,122 @@
 [
     {
+        "name": "dataset",
+        "type": "string",
+        "label": "Default Data Set",
+        "description": "Default data set presented when application starts.",
+        "default_value": "orders",
+        "section": "General",
+        "required": true,
+        "min_value": null,
+        "max_value": null,
+        "min_length": null,
+        "max_length": null,
+        "options": [
+            {
+                "display": "Orders",
+                "value": "orders"
+            },
+            {
+                "display": "Invoices",
+                "value": "invoices"
+            },
+            {
+                "display": "Payments",
+                "value": "payments"
+            },
+            {
+                "display": "Refunds",
+                "value": "refunds"
+            },
+            {
+                "display": "Fees",
+                "value": "fees"
+            }
+        ]
+    },
+    {
+        "name": "dates",
+        "type": "string",
+        "label": "Default Dates",
+        "description": "Default dates presented when application starts.",
+        "default_value": "last_30",
+        "section": "General",
+        "required": true,
+        "min_value": null,
+        "max_value": null,
+        "min_length": null,
+        "max_length": null,
+        "options": [
+            {
+                "display": "Today",
+                "value": "today"
+            },
+            {
+                "display": "Yesterday",
+                "value": "yesterday"
+            },
+            {
+                "display": "This Week",
+                "value": "this_week"
+            },
+            {
+                "display": "Last Week",
+                "value": "last_week"
+            },
+            {
+                "display": "Last 7 days",
+                "value": "last_7"
+            },
+            {
+                "display": "This Month",
+                "value": "this_month"
+            },
+            {
+                "display": "Last Month",
+                "value": "last_month"
+            },
+            {
+                "display": "Last 30 days",
+                "value": "last_30"
+            },
+            {
+                "display": "This Year",
+                "value": "this_year"
+            },
+            {
+                "display": "Last Year",
+                "value": "last_year"
+            },
+            {
+                "display": "Custom Range",
+                "value": "custom"
+            }
+        ]
+    },
+    {
+        "name": "exportFormat",
+        "type": "string",
+        "label": "Default Export Format",
+        "description": "Default export format presented when application starts.",
+        "default_value": "csv",
+        "section": "General",
+        "required": true,
+        "min_value": null,
+        "max_value": null,
+        "min_length": null,
+        "max_length": null,
+        "options": [
+            {
+                "display": "CSV",
+                "value": "csv"
+            },
+            {
+                "display": "JSON",
+                "value": "json"
+            }
+        ]
+    },
+    {
         "name": "timezone",
         "type": "string",
         "label": "Default Timezone",

@@ -12,15 +12,19 @@ app.controller("RootController",
     var settings = SettingsService.get();
     if (angular.isUndefined(settings.app.timezone) || settings.app.timezone.length <= 0)
       settings.app.timezone = 'UTC';
-    if (angular.isUndefined(settings.app.company_name) || settings.app.company_name.length <= 0)
-      settings.app.company_name = settings.account.company_name;
+    if (angular.isUndefined(settings.app.exportFormat) || settings.app.exportFormat.length <= 0)
+      settings.app.exportFormat = 'csv';
+    if (angular.isUndefined(settings.app.dates) || settings.app.dates.length <= 0)
+      settings.app.dates = 'last_30';
+    if (angular.isUndefined(settings.app.dataset) || settings.app.dataset.length <= 0)
+      settings.app.dataset = 'orders';
 
     // Set defaults
     $scope.options = {
-      dataset: 'orders',
-      format: 'csv',
+      dataset: settings.app.dataset,
+      format: settings.app.exportFormat,
       timezone: settings.app.timezone,
-      dates: "last_30",
+      dates: settings.app.dates,
       unravelFields: [{id: 'items', name: 'Items'}],
       unravelField: 'items'
     };

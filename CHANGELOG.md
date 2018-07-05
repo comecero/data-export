@@ -1,4 +1,17 @@
-﻿<a name="0.9.3"></a>
+﻿<a name="0.9.4"></a>
+# 0.9.4
+
+* Update bootstrap and font awesome versions, replace bootstrap glyphs with font awesome
+* Added help and support page
+* Added default fields/settings.json file
+* Added option to settings for users to customize default behavior for the following fields
+    * Data Set
+    * Dates
+    * Export Format
+* Removed company name from settings
+
+
+<a name="0.9.3"></a>
 # 0.9.3
 
 * Added ability to include sub resources via the expand API query parameter
