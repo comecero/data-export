@@ -36,10 +36,20 @@
             </div>
             <div update-include-fields>
                 <div ng-if="includes.length" class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
-                    <label class="control-label" translate>Include</label>
-                    <select class="form-control" ng-model="options.expand">
-                        <option ng-repeat="option in includes" value="{{option.value}}" translate>{{option.label}}</option>
-                    </select>
+                  <label class="control-label" translate>Include</label>
+                  <div style="display: block;">
+                    <div class="btn-group" uib-dropdown auto-close="outsideClick" width="100%;">
+                      <button type="button" class="btn btn-default btn-sm" uib-dropdown-toggle translate>
+                       {{options.expand.length ? 'Selected' : 'None'}} <span class="caret"></span>
+                      </button>
+                      <ul class="dropdown-menu" uib-dropdown-menu role="menu">
+                        <li ng-repeat="option in includes" role="menuitem">
+                          <input style="margin-left:5px;" type="checkbox" ng-click="toggleCheckbox(options, 'expand', option.value)">
+                          <span translate>{{option.label}}</span>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
             </div>
         </div>

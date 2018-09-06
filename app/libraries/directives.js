@@ -3,28 +3,36 @@ app.directive('updateIncludeFields', function () {
   var linkFn = function (scope, element, attrs) {
     var availableIncludes =  {
       payments: [
-        {'value': '', 'label': 'None'},
         {'value': 'fee_summary', 'label': 'Fee Summary'},
       ],
       refunds: [
-        {'value': '', 'label': 'None'},
+        {'value': 'payment', 'label': 'Payment'},
         {'value': 'fee_summary', 'label': 'Fee Summary'},
       ],
       orders: [
-        {'value': '', 'label': 'None'},
         {'value': 'customer', 'label': 'Customer'},
       ],
       invoices: [
-        {'value': '', 'label': 'None'},
         {'value': 'customer', 'label': 'Customer'},
       ]
+    };
+
+    scope.toggleCheckbox = function(resource, field, value) {
+      if (angular.isUndefined(resource[field])) resource[field] = [];
+      var list = resource[field];
+      var idx = list.indexOf(value);
+      if (idx >= 0) {
+        list.splice(idx, 1);
+      } else {
+        list.push(value);
+      }
     };
 
     scope.$watch(function() {
       return scope.options.dataset;
     },function(newValue) {
       scope.includes = [];
-      scope.options.expand = '';
+      scope.options.expand = [];
       if (angular.isDefined(availableIncludes[newValue])) {
         scope.includes = availableIncludes[newValue];
       }
