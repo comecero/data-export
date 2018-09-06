@@ -157,7 +157,7 @@ app.factory('toCSV', function() {
     for (var i in unraveled) {
       var row = unraveled[i];
       var keys = Object.keys(row);
-      for (var j in Object.keys(row)) {
+      for (var j in keys) {
         var key = keys[j];
         if (angular.isArray(row[key]) || key.match(/object$/)) {
           delete row[key];
@@ -168,83 +168,10 @@ app.factory('toCSV', function() {
           delete row[key];
           continue;
         }
-      }
-    }
 
-    return Papa.unparse(unraveled);
-  };
-  return to_csv;
-});
-
-app.factory('toCSV', function() {
-  var mergeNestedObjects = function(parent) {
-    if (angular.isArray(parent) || !angular.isObject(parent)) return;
-    var keys = Object.keys(parent);
-    for (var k in keys) {
-      var key = keys[k];
-      mergeNestedObjects(parent[key]);
-    }
-
-    var keys1 = Object.keys(parent);
-    for (var k1 in keys1) {
-      var key1 = keys1[k1];
-      var value1 = parent[key1];
-      if (angular.isArray(value1) || !angular.isObject(value1)) continue;
-      var keys2 = Object.keys(value1);
-      for (var k2 in keys2) {
-        var key2 = keys2[k2];
-        var value2 = value1[key2];
-        parent[key1 + '.' + key2] = value2;
-      }
-      delete parent[key1];
-    }
-  };
-
-  var to_csv = function(data, options) {
-    var unraveled = [];
-    // Unravel items if present, otherwise just push object on to unraveled.
-    for (var i in data) {
-      var row = angular.copy(data[i]);
-      if (angular.isDefined(options.unravelField) && angular.isArray(row[options.unravelField])) {
-        var items = row[options.unravelField];
-        delete row[options.unravelField];
-        for (var j in items) {
-          var item = angular.copy(items[j]);
-          var keys = Object.keys(item);
-          for (var k in keys) {
-            var key = keys[k];
-            var value = item[key];
-            delete item[key];
-            item[ options.unravelField + '.' + key] = value;
-          }
-          unraveled.push(
-            angular.merge(item, row)
-          );
-        }
-      } else {
-        unraveled.push(row);
-      }
-    }
-
-    // Merge nested objects
-    for (var i in unraveled) {
-      mergeNestedObjects(unraveled[i]);
-    }
-
-    // Remove nested arrays and/or api urls.
-    for (var i in unraveled) {
-      var row = unraveled[i];
-      var keys = Object.keys(row);
-      for (var j in Object.keys(row)) {
-        var key = keys[j];
-        if (angular.isArray(row[key]) || key.match(/object$/)) {
-          delete row[key];
-          continue;
-        }
-
-        if (angular.isString(row[key]) && row[key].match(/\/api\/v1\//)) {
-          delete row[key];
-          continue;
+        if (key.match(/(_|\b)date(_|\b)/)) {
+          //row[key] = row[key].replace('T', ' ').replace('Z', '');
+          row[key] = new Date(row[key]);
         }
       }
     }
