@@ -1,4 +1,13 @@
-﻿<a name="0.9.4"></a>
+﻿<a name="0.9.6"></a>
+# 0.9.6
+* really fixed issue with excel unable to parse datetime fields
+
+<a name="0.9.5"></a>
+# 0.9.5
+* added option to include payment on refund along with selecting multiple includes per single export
+
+
+<a name="0.9.4"></a>
 # 0.9.4
 
 * Update bootstrap and font awesome versions, replace bootstrap glyphs with font awesome

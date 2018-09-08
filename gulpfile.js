@@ -72,7 +72,7 @@ gulp.task('zip', function (done) {
         });
     }
 
-    return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./.gitattributes", "!./settings/**", "!./settings/",
+    return gulp.src(["./**", "!./.git", "!./.vs", "!./.git/**", "!./.gitattributes", "!./settings/**", "!./settings/", "!oauth",
                      "!./*.zip", "!./.gitignore", "!./*.sln", "!./Web.config", "!./Web.Debug.config", "!./node_modules/**"])
       .pipe(zip("data-export-" + version + ".zip"))
       .pipe(gulp.dest("./"));

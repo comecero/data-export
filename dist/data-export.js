@@ -1,5 +1,5 @@
 /*
-Comecero Data Export version: 0.9.5
+Comecero Data Export version: 0.9.6
 https://comecero.com
 https://github.com/comecero/data-export
 Copyright Comecero and other contributors. Released under MIT license. See LICENSE for details.
@@ -1163,9 +1163,9 @@ app.factory('toCSV', function() {
           continue;
         }
 
+        // remove T and Z from dates so excel treats as dates
         if (key.match(/(_|\b)date(_|\b)/)) {
-          //row[key] = row[key].replace('T', ' ').replace('Z', '');
-          row[key] = new Date(row[key]);
+          row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
       }
     }
