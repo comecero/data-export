@@ -169,9 +169,9 @@ app.factory('toCSV', function() {
           continue;
         }
 
+        // remove T and Z from dates so excel treats as dates
         if (key.match(/(_|\b)date(_|\b)/)) {
-          //row[key] = row[key].replace('T', ' ').replace('Z', '');
-          row[key] = new Date(row[key]);
+          row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
       }
     }
