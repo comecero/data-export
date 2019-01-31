@@ -867,6 +867,7 @@ app.directive('updateIncludeFields', function () {
       ],
       orders: [
         {'value': 'customer', 'label': 'Customer'},
+        {'value': 'fee_summary', 'label': 'Fee Summary'},
       ],
       invoices: [
         {'value': 'customer', 'label': 'Customer'},
@@ -1093,6 +1094,23 @@ app.factory('saveFile', function(FileSaver, Blob) {
 });
 
 app.factory('toCSV', function() {
+  var doOrderFeeSummary = function(row) {
+    var item_subtotal = row['items.settlement_subtotal'];
+    var subtotal = row['settlement_subtotal'];
+    var fee_total = row['fee_summary.total']
+    row['fee_allocation'] = fee_total*item_subtotal/subtotal;
+  }
+  var doOrderCalcs = function(row, options) {
+    if (options.expand.indexOf('fee_summary') >= 0) {
+      doOrderFeeSummary(row);
+    }
+  }
+
+  var doCalcs = function(row, options) {
+    if (options.dataset == 'orders')
+      doOrderCalcs(row, options);
+  }
+
   var mergeNestedObjects = function(parent) {
     if (angular.isArray(parent) || !angular.isObject(parent)) return;
     var keys = Object.keys(parent);
@@ -1168,6 +1186,8 @@ app.factory('toCSV', function() {
           row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
       }
+
+      doCalcs(row, options);
     }
 
     return Papa.unparse(unraveled);
