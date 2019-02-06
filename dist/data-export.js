@@ -1098,7 +1098,11 @@ app.factory('toCSV', function() {
     var item_subtotal = row['items.settlement_subtotal'];
     var subtotal = row['settlement_subtotal'];
     var fee_total = row['fee_summary.total']
-    row['fee_allocation'] = fee_total*item_subtotal/subtotal;
+    row['fees'] = subtotal != 0.00 ? fee_total*item_subtotal/subtotal : 0.00;
+    row['fees_currency'] = row['fee_summary.currency'];
+    for(var key in row) {
+      if (key.match(/^fee_summary/)) delete row[key];
+    }
   }
   var doOrderCalcs = function(row, options) {
     if (options.expand.indexOf('fee_summary') >= 0) {
