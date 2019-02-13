@@ -903,6 +903,40 @@ app.directive('updateIncludeFields', function () {
   }
 });
 
+app.directive('displaySuccessField', function () {
+  var linkFn = function (scope, element, attrs) {
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      switch(newValue) {
+        case 'payments':
+        case 'refunds':
+          element.css('display', 'inline');
+          scope.successValues = [
+            {'value': '', 'label': 'Any'},
+            {'value': 'true', 'label': 'True'},
+            {'value': 'false', 'label': 'False'}
+          ];
+          if (angular.isUndefined(scope.options.success)) scope.options.success = 'true';
+          break;
+        case 'invoices':
+        case 'orders':
+        case 'fees':
+        default:
+          delete scope.options['success'];
+          element.css('display', 'none');
+          scope.successValues = [];
+      };
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [
@@ -921,6 +955,7 @@ app.directive('updateStatusFields', function () {
     scope.$watch(function() {
       return scope.options.dataset;
     },function(newValue) {
+      newValue = 'DoNotDisplayForNow';
       switch(newValue) {
         case 'orders':
           scope.options.statusField = 'payment_status';
@@ -976,6 +1011,7 @@ app.directive('updateStatusFields', function () {
             {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
           ];
           break;
+        case 'fees':
         default:
           scope.options.statusField = '';
           scope.options.status = '';
@@ -1006,13 +1042,14 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
     }
     return false;
   }
-  var fetchNested = function(row, options) {
-    var deferred = $q.defer();
-    return deferred.promise;
-  }
+
   return function(scope, options, datepicker) {
       var deferred = $q.defer();
       var url = buildRootUrl(options, datepicker);
+      var success = null;
+      if ( angular.isDefined(options.success) && options.success.length) {
+        success = options.success == 'true';
+      }
       var data = [];
       scope.cancelFunc = scope.$watch(function() {
         return url;
@@ -1024,7 +1061,12 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
             var next_page = d.next_page_url;
             if (angular.isArray(d.data)) {
               for (var i in d.data) {
-                data.push(d.data[i]);
+                var row = d.data[i];
+                if (typeof success == 'boolean') {
+                  if (success != row.success) continue;
+                }
+
+                data.push(row);
               }
             }
             if (angular.isUndefined(next_page) || next_page == null) {
@@ -1186,7 +1228,7 @@ app.factory('toCSV', function() {
         }
 
         // remove T and Z from dates so excel treats as dates
-        if (key.match(/(_|\b)date(_|\b)/)) {
+        if (key.match(/(_|\b)date(_|\b)/) && row[key]) {
           row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
       }
