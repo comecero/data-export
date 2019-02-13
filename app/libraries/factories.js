@@ -11,13 +11,14 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
     }
     return false;
   }
-  var fetchNested = function(row, options) {
-    var deferred = $q.defer();
-    return deferred.promise;
-  }
+
   return function(scope, options, datepicker) {
       var deferred = $q.defer();
       var url = buildRootUrl(options, datepicker);
+      var success = null;
+      if ( angular.isDefined(options.success) && options.success.length) {
+        success = options.success == 'true';
+      }
       var data = [];
       scope.cancelFunc = scope.$watch(function() {
         return url;
@@ -29,7 +30,12 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
             var next_page = d.next_page_url;
             if (angular.isArray(d.data)) {
               for (var i in d.data) {
-                data.push(d.data[i]);
+                var row = d.data[i];
+                if (typeof success == 'boolean') {
+                  if (success != row.success) continue;
+                }
+
+                data.push(row);
               }
             }
             if (angular.isUndefined(next_page) || next_page == null) {
@@ -191,7 +197,7 @@ app.factory('toCSV', function() {
         }
 
         // remove T and Z from dates so excel treats as dates
-        if (key.match(/(_|\b)date(_|\b)/)) {
+        if (key.match(/(_|\b)date(_|\b)/) && row[key]) {
           row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
       }

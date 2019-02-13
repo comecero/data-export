@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div update-include-fields>
-                <div ng-if="includes.length" class="col-lg-3 col-sm-6 col-xs-12 spacer-t10">
+                <div ng-if="includes.length" class="col-lg-1 col-sm-3 col-xs-12 spacer-t10">
                   <label class="control-label" translate>Include</label>
                   <div style="display: block;">
                     <div class="btn-group" uib-dropdown auto-close="outsideClick" width="100%;">
@@ -51,6 +51,12 @@
                     </div>
                   </div>
                 </div>
+            </div>
+            <div display-success-field class="col-lg-2 col-sm-3 col-xs-12 spacer-t10">
+                <label class="control-label" translate>Success</label>
+                <select class="form-control" ng-model="options.success">
+                    <option ng-repeat="option in successValues" value="{{option.value}}" translate>{{option.label}}</option>
+                </select>
             </div>
         </div>
 

@@ -47,6 +47,40 @@ app.directive('updateIncludeFields', function () {
   }
 });
 
+app.directive('displaySuccessField', function () {
+  var linkFn = function (scope, element, attrs) {
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      switch(newValue) {
+        case 'payments':
+        case 'refunds':
+          element.css('display', 'inline');
+          scope.successValues = [
+            {'value': '', 'label': 'Any'},
+            {'value': 'true', 'label': 'True'},
+            {'value': 'false', 'label': 'False'}
+          ];
+          if (angular.isUndefined(scope.options.success)) scope.options.success = 'true';
+          break;
+        case 'invoices':
+        case 'orders':
+        case 'fees':
+        default:
+          delete scope.options['success'];
+          element.css('display', 'none');
+          scope.successValues = [];
+      };
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [
@@ -65,6 +99,7 @@ app.directive('updateStatusFields', function () {
     scope.$watch(function() {
       return scope.options.dataset;
     },function(newValue) {
+      newValue = 'DoNotDisplayForNow';
       switch(newValue) {
         case 'orders':
           scope.options.statusField = 'payment_status';
@@ -120,6 +155,7 @@ app.directive('updateStatusFields', function () {
             {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
           ];
           break;
+        case 'fees':
         default:
           scope.options.statusField = '';
           scope.options.status = '';
