@@ -1217,6 +1217,16 @@ app.factory('toCSV', function() {
       var keys = Object.keys(row);
       for (var j in keys) {
         var key = keys[j];
+        if (key == 'order') {
+          if (row[key] && row[key].length) {
+            row['has_order'] = true;
+            row['order_id'] = row[key].replace(/.*\/api\/v1\/orders\//, '');
+          } else {
+            row['has_order'] = false;
+            row['order_id'] = '';
+          }
+        }
+
         if (angular.isArray(row[key]) || key.match(/object$/)) {
           delete row[key];
           continue;
