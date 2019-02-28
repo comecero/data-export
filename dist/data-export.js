@@ -937,6 +937,36 @@ app.directive('displaySuccessField', function () {
   }
 });
 
+app.directive('displayCurrencyTypeField', function () {
+  var linkFn = function (scope, element, attrs) {
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      switch(newValue) {
+        case 'reports/tax':
+          element.css('display', 'inline');
+          scope.currencyTypeValues = [
+            {'value': 'settlement', 'label': 'Settlement'},
+            {'value': 'payment', 'label': 'Payment'}
+          ];
+          if (angular.isUndefined(scope.options.currency_type)) scope.options.currency_type = 'settlement';
+          break;
+        default:
+          delete scope.options['currency_type'];
+          element.css('display', 'none');
+          scope.currencyTypeValues = [];
+      };
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [
@@ -1093,8 +1123,12 @@ app.factory('buildRootUrl', function($httpParamSerializer) {
       timezone: options.timezone
     };
 
-    if (angular.isDefined(options.statusField) && angular.isDefined(options.status)) {
+    if (angular.isDefined(options.statusField) && options.statusField.length && angular.isDefined(options.status)) {
       query[options.statusField] = options.status;
+    }
+
+    if (angular.isDefined(options.currency_type) && angular.isDefined(options.currency_type)) {
+      query['currency_type'] = options.currency_type;
     }
 
     if (angular.isArray(options.expand) && options.expand.length) {
@@ -1147,10 +1181,24 @@ app.factory('toCSV', function() {
       if (key.match(/^fee_summary/)) delete row[key];
     }
   }
+  var doOrderSplitOrderDiscount = function(row) {
+    var fields = ['discount', 'settlement_discount'];
+    var items_count = row['items_count'];
+    var item_subtotal = row['items.settlement_subtotal'];
+    var subtotal = row['settlement_subtotal'];
+    var rate = subtotal != 0.00 ? item_subtotal/subtotal : 1/items_count;
+    for (var idx in fields) {
+      var field = fields[idx];
+      var order_discount = row[field];
+      var item_discount = row['items.' + field];
+      row['adjusted_' + field] = item_discount + order_discount*rate;
+    }
+  }
   var doOrderCalcs = function(row, options) {
     if (options.expand.indexOf('fee_summary') >= 0) {
       doOrderFeeSummary(row);
     }
+    doOrderSplitOrderDiscount(row);
   }
 
   var doCalcs = function(row, options) {
@@ -1184,8 +1232,10 @@ app.factory('toCSV', function() {
   var to_csv = function(data, options) {
     var unraveled = [];
     // Unravel items if present, otherwise just push object on to unraveled.
+    var commonFields = [];
     for (var i in data) {
       var row = angular.copy(data[i]);
+      var rowKeys = Object.keys(row);
       if (angular.isDefined(options.unravelField) && angular.isArray(row[options.unravelField])) {
         var items = row[options.unravelField];
         delete row[options.unravelField];
@@ -1194,6 +1244,7 @@ app.factory('toCSV', function() {
           var keys = Object.keys(item);
           for (var k in keys) {
             var key = keys[k];
+            if (rowKeys.includes(key) && !commonFields.includes(key)) commonFields.push(key);
             var value = item[key];
             delete item[key];
             item[ options.unravelField + '.' + key] = value;
@@ -1207,11 +1258,14 @@ app.factory('toCSV', function() {
       }
     }
 
+    //console.log(commonFields);
+
     // Merge nested objects
     for (var i in unraveled) {
       mergeNestedObjects(unraveled[i]);
     }
 
+    var excludeColumns = [];
     // Remove nested arrays and/or api urls.
     for (var i in unraveled) {
       var row = unraveled[i];
@@ -1229,11 +1283,13 @@ app.factory('toCSV', function() {
         }
 
         if (angular.isArray(row[key]) || key.match(/object$/)) {
+          if ( excludeColumns.indexOf(key) < 0) excludeColumns.push(key);
           delete row[key];
           continue;
         }
 
         if (angular.isString(row[key]) && row[key].match(/\/api\/v1\//)) {
+          if ( excludeColumns.indexOf(key) < 0) excludeColumns.push(key);
           delete row[key];
           continue;
         }
@@ -1242,12 +1298,26 @@ app.factory('toCSV', function() {
         if (key.match(/(_|\b)date(_|\b)/) && row[key]) {
           row[key] = row[key].replace('T', ' ').replace('Z', '');
         }
+
       }
 
       doCalcs(row, options);
     }
 
-    return Papa.unparse(unraveled);
+    // Everything is done. now figure out columns to display.
+    var columns = [];
+    for (var i in unraveled) {
+      var row = unraveled[i];
+      var keys = Object.keys(row);
+      for (var j in keys) {
+        var key = keys[j];
+        if (excludeColumns.indexOf(key) >= 0) continue;
+        if (columns.indexOf(key) >= 0) continue;
+        columns.push(key);
+      }
+    }
+
+    return Papa.unparse(unraveled, {columns: columns});
   };
   return to_csv;
 });
