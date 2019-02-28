@@ -24,6 +24,7 @@
                     <option value="payments" translate>Payments</option>
                     <option value="refunds" translate>Refunds</option>
                     <option value="fees" translate>Fees</option>
+                    <option value="reports/tax" translate>Taxes</option>
                 </select>
             </div>
             <div update-status-fields>
@@ -56,6 +57,13 @@
                 <label class="control-label" translate>Success</label>
                 <select class="form-control" ng-model="options.success">
                     <option ng-repeat="option in successValues" value="{{option.value}}" translate>{{option.label}}</option>
+                </select>
+            </div>
+
+            <div display-currency-type-field class="col-lg-2 col-sm-3 col-xs-12 spacer-t10">
+                <label class="control-label" translate>Currency Type</label>
+                <select class="form-control" ng-model="options.currency_type">
+                    <option ng-repeat="option in currencyTypeValues" value="{{option.value}}" translate>{{option.label}}</option>
                 </select>
             </div>
         </div>

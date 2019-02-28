@@ -81,6 +81,36 @@ app.directive('displaySuccessField', function () {
   }
 });
 
+app.directive('displayCurrencyTypeField', function () {
+  var linkFn = function (scope, element, attrs) {
+    scope.$watch(function() {
+      return scope.options.dataset;
+    },function(newValue) {
+      switch(newValue) {
+        case 'reports/tax':
+          element.css('display', 'inline');
+          scope.currencyTypeValues = [
+            {'value': 'settlement', 'label': 'Settlement'},
+            {'value': 'payment', 'label': 'Payment'}
+          ];
+          if (angular.isUndefined(scope.options.currency_type)) scope.options.currency_type = 'settlement';
+          break;
+        default:
+          delete scope.options['currency_type'];
+          element.css('display', 'none');
+          scope.currencyTypeValues = [];
+      };
+    });
+  };
+
+  return {
+    restrict: 'A',
+    scope: true,
+    link: linkFn
+  }
+});
+
+
 app.directive('updateStatusFields', function () {
   var linkFn = function (scope, element, attrs) {
     var defaultStatuses =  [
