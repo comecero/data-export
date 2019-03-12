@@ -133,7 +133,6 @@ app.factory('toCSV', function() {
       row['adjusted_' + field] = item_discount + order_discount*rate;
     }
   }
-  var doit = true;
   var doRebillInfo = function(row) {
     row['new_sub'] = row['subscription'] == null && row['items.subscription'] != null ? 'true' : 'false';
     row['rebill'] = row['subscription'] != null && row['items.subscription'] != null ? 'true' : 'false';
