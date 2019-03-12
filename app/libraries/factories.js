@@ -133,11 +133,17 @@ app.factory('toCSV', function() {
       row['adjusted_' + field] = item_discount + order_discount*rate;
     }
   }
+  var doit = true;
+  var doRebillInfo = function(row) {
+    row['new_sub'] = row['subscription'] == null && row['items.subscription'] != null ? 'true' : 'false';
+    row['rebill'] = row['subscription'] != null && row['items.subscription'] != null ? 'true' : 'false';
+  }
   var doOrderCalcs = function(row, options) {
     if (options.expand.indexOf('fee_summary') >= 0) {
       doOrderFeeSummary(row);
     }
     doOrderSplitOrderDiscount(row);
+    doRebillInfo(row);
   }
 
   var doCalcs = function(row, options) {
@@ -208,6 +214,7 @@ app.factory('toCSV', function() {
     // Remove nested arrays and/or api urls.
     for (var i in unraveled) {
       var row = unraveled[i];
+      doCalcs(row, options);
       var keys = Object.keys(row);
       for (var j in keys) {
         var key = keys[j];
@@ -239,8 +246,6 @@ app.factory('toCSV', function() {
         }
 
       }
-
-      doCalcs(row, options);
     }
 
     // Everything is done. now figure out columns to display.
