@@ -1,5 +1,5 @@
 /*
-Comecero Data Export version: 1.0.1
+Comecero Data Export version: 1.0.2
 https://comecero.com
 https://github.com/comecero/data-export
 Copyright Comecero and other contributors. Released under MIT license. See LICENSE for details.
@@ -1085,7 +1085,7 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
         return url;
       }, function(next) {
         if (angular.isUndefined(next) || next == null) return;
-        ApiService.getList(next).then(
+          ApiService.getList(next, {proxy: true}).then(
           function(response) {
             var d = response.data;
             var next_page = d.next_page_url;
@@ -1198,10 +1198,6 @@ app.factory('toCSV', function() {
   var doRebillInfo = function(row) {
     row['new_sub'] = row['subscription'] == null && row['items.subscription'] != null ? 'true' : 'false';
     row['rebill'] = row['subscription'] != null && row['items.subscription'] != null ? 'true' : 'false';
-    //if (row['items.subscription']) {
-      if (doit) console.log(row);
-      doit = false;
-    //}
   }
   var doOrderCalcs = function(row, options) {
     if (options.expand.indexOf('fee_summary') >= 0) {
