@@ -10,8 +10,9 @@ app.directive('updateIncludeFields', function () {
         {'value': 'fee_summary', 'label': 'Fee Summary'},
       ],
       orders: [
-        {'value': 'customer', 'label': 'Customer'},
-        {'value': 'fee_summary', 'label': 'Fee Summary'},
+        { 'value': 'items', 'label': 'Items' },
+        { 'value': 'customer', 'label': 'Customer' },
+        { 'value': 'fee_summary', 'label': 'Fee Summary' },
       ],
       invoices: [
         {'value': 'customer', 'label': 'Customer'},

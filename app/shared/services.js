@@ -1829,12 +1829,15 @@ app.service("SettingsService", [function ($http, $q) {
         settings.config.development = false;
 
         // For convenience, if you place a development flag in either one of the settings stubs (during local development), the app will be marked as running in development mode.
-        if (settings.account.development || settings.app.development) {
+        if (settings.account.development || settings.app.development || settings.style.development) {
 
             settings.config.development = true;
 
+            var apiHost = settings.account.api_host || settings.app.api_host || settings.style.api_host || "api.comecero.com";
+            apiHost = "https://" + apiHost;
+
             // Make the apiPrefix a fully qualified url since requests in development mode don't have access to the reverse proxy.
-            settings.config.apiPrefix = "https://api.comecero.com" + settings.config.apiPrefix;
+            settings.config.apiPrefix = apiHost + settings.config.apiPrefix;
         }
 
         return settings;
