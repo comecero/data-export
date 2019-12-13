@@ -866,7 +866,10 @@ app.directive('updateIncludeFields', function () {
         {'value': 'fee_summary', 'label': 'Fee Summary'},
       ],
       orders: [
-        { 'value': 'items', 'label': 'Items' },
+        { 'value': 'customer', 'label': 'Customer' },
+        { 'value': 'fee_summary', 'label': 'Fee Summary' },
+      ],
+      order_items: [
         { 'value': 'customer', 'label': 'Customer' },
         { 'value': 'fee_summary', 'label': 'Fee Summary' },
       ],
@@ -1096,15 +1099,7 @@ app.factory('fetchData', function (ApiService, $q, buildRootUrl) {
                           if (typeof success == 'boolean') {
                               if (success != row.success) continue;
                           }
-
-                          for (var y in scope.includes) {
-                              if (options.expand.indexOf(y) == -1) {
-                                  delete row[y];
-                              }
-                          }
-
                           data.push(row);
-
                       }
                   }
                   if (angular.isUndefined(next_page) || next_page == null) {
@@ -1165,7 +1160,17 @@ app.factory('buildRootUrl', function ($httpParamSerializer) {
                 break;
         }
 
-        return '/' + options.dataset + '?' + $httpParamSerializer(query);
+        var resource = angular.copy(options.dataset);
+
+        if (resource == "orders") {
+            query.hide = "items";
+        }
+
+        if (resource == "order_items") {
+            resource = "orders";
+        }
+
+        return '/' + resource + '?' + $httpParamSerializer(query);
     };
 });
 
@@ -1271,8 +1276,6 @@ app.factory('toCSV', function () {
                 unraveled.push(row);
             }
         }
-
-        //console.log(commonFields);
 
         // Merge nested objects
         for (var i in unraveled) {
