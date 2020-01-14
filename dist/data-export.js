@@ -856,210 +856,210 @@ app.run(function ($rootScope, $http, SettingsService, StorageService, LanguageSe
 
 
 app.directive('updateIncludeFields', function () {
-  var linkFn = function (scope, element, attrs) {
-    var availableIncludes =  {
-      payments: [
-        {'value': 'fee_summary', 'label': 'Fee Summary'},
-      ],
-      refunds: [
-        {'value': 'payment', 'label': 'Payment'},
-        {'value': 'fee_summary', 'label': 'Fee Summary'},
-      ],
-      orders: [
-        { 'value': 'customer', 'label': 'Customer' },
-        { 'value': 'fee_summary', 'label': 'Fee Summary' },
-      ],
-      order_items: [
-        { 'value': 'customer', 'label': 'Customer' },
-        { 'value': 'fee_summary', 'label': 'Fee Summary' },
-      ],
-      invoices: [
-        {'value': 'customer', 'label': 'Customer'},
-      ]
+    var linkFn = function (scope, element, attrs) {
+        var availableIncludes = {
+            payments: [
+              { 'value': 'fee_summary', 'label': 'Fee Summary' },
+            ],
+            refunds: [
+              { 'value': 'payment', 'label': 'Payment' },
+              { 'value': 'fee_summary', 'label': 'Fee Summary' },
+            ],
+            orders: [
+              { 'value': 'customer', 'label': 'Customer' },
+              { 'value': 'fee_summary', 'label': 'Fee Summary' },
+            ],
+            order_items: [
+              { 'value': 'customer', 'label': 'Customer' },
+              { 'value': 'fee_summary', 'label': 'Fee Summary' },
+            ],
+            invoices: [
+              { 'value': 'customer', 'label': 'Customer' },
+            ]
+        };
+
+        scope.toggleCheckbox = function (resource, field, value) {
+            if (angular.isUndefined(resource[field])) resource[field] = [];
+            var list = resource[field];
+            var idx = list.indexOf(value);
+            if (idx >= 0) {
+                list.splice(idx, 1);
+            } else {
+                list.push(value);
+            }
+        };
+
+        scope.$watch(function () {
+            return scope.options.dataset;
+        }, function (newValue) {
+            scope.includes = [];
+            scope.options.expand = [];
+            if (angular.isDefined(availableIncludes[newValue])) {
+                scope.includes = availableIncludes[newValue];
+            }
+        });
     };
 
-    scope.toggleCheckbox = function(resource, field, value) {
-      if (angular.isUndefined(resource[field])) resource[field] = [];
-      var list = resource[field];
-      var idx = list.indexOf(value);
-      if (idx >= 0) {
-        list.splice(idx, 1);
-      } else {
-        list.push(value);
-      }
-    };
-
-    scope.$watch(function() {
-      return scope.options.dataset;
-    },function(newValue) {
-      scope.includes = [];
-      scope.options.expand = [];
-      if (angular.isDefined(availableIncludes[newValue])) {
-        scope.includes = availableIncludes[newValue];
-      }
-    });
-  };
-
-  return {
-    restrict: 'A',
-    scope: true,
-    link: linkFn
-  }
+    return {
+        restrict: 'A',
+        scope: true,
+        link: linkFn
+    }
 });
 
 app.directive('displaySuccessField', function () {
-  var linkFn = function (scope, element, attrs) {
-    scope.$watch(function() {
-      return scope.options.dataset;
-    },function(newValue) {
-      switch(newValue) {
-        case 'payments':
-        case 'refunds':
-          element.css('display', 'inline');
-          scope.successValues = [
-            {'value': '', 'label': 'Any'},
-            {'value': 'true', 'label': 'True'},
-            {'value': 'false', 'label': 'False'}
-          ];
-          if (angular.isUndefined(scope.options.success)) scope.options.success = 'true';
-          break;
-        case 'invoices':
-        case 'orders':
-        case 'fees':
-        default:
-          delete scope.options['success'];
-          element.css('display', 'none');
-          scope.successValues = [];
-      };
-    });
-  };
+    var linkFn = function (scope, element, attrs) {
+        scope.$watch(function () {
+            return scope.options.dataset;
+        }, function (newValue) {
+            switch (newValue) {
+                case 'payments':
+                case 'refunds':
+                    element.css('display', 'inline');
+                    scope.successValues = [
+                      { 'value': '', 'label': 'Any' },
+                      { 'value': 'true', 'label': 'True' },
+                      { 'value': 'false', 'label': 'False' }
+                    ];
+                    if (angular.isUndefined(scope.options.success)) scope.options.success = 'true';
+                    break;
+                case 'invoices':
+                case 'orders':
+                case 'fees':
+                default:
+                    delete scope.options['success'];
+                    element.css('display', 'none');
+                    scope.successValues = [];
+            };
+        });
+    };
 
-  return {
-    restrict: 'A',
-    scope: true,
-    link: linkFn
-  }
+    return {
+        restrict: 'A',
+        scope: true,
+        link: linkFn
+    }
 });
 
 app.directive('displayCurrencyTypeField', function () {
-  var linkFn = function (scope, element, attrs) {
-    scope.$watch(function() {
-      return scope.options.dataset;
-    },function(newValue) {
-      switch(newValue) {
-        case 'reports/tax':
-          element.css('display', 'inline');
-          scope.currencyTypeValues = [
-            {'value': 'settlement', 'label': 'Settlement'},
-            {'value': 'payment', 'label': 'Payment'}
-          ];
-          if (angular.isUndefined(scope.options.currency_type)) scope.options.currency_type = 'settlement';
-          break;
-        default:
-          delete scope.options['currency_type'];
-          element.css('display', 'none');
-          scope.currencyTypeValues = [];
-      };
-    });
-  };
+    var linkFn = function (scope, element, attrs) {
+        scope.$watch(function () {
+            return scope.options.dataset;
+        }, function (newValue) {
+            switch (newValue) {
+                case 'reports/tax':
+                    element.css('display', 'inline');
+                    scope.currencyTypeValues = [
+                      { 'value': 'settlement', 'label': 'Settlement' },
+                      { 'value': 'payment', 'label': 'Payment' }
+                    ];
+                    if (angular.isUndefined(scope.options.currency_type)) scope.options.currency_type = 'settlement';
+                    break;
+                default:
+                    delete scope.options['currency_type'];
+                    element.css('display', 'none');
+                    scope.currencyTypeValues = [];
+            };
+        });
+    };
 
-  return {
-    restrict: 'A',
-    scope: true,
-    link: linkFn
-  }
+    return {
+        restrict: 'A',
+        scope: true,
+        link: linkFn
+    }
 });
 
 
 app.directive('updateStatusFields', function () {
-  var linkFn = function (scope, element, attrs) {
-    var defaultStatuses =  [
-      {'value': '', 'label': 'Any'},                // Export all
-      {'value': 'unpaid', 'label': 'Unpaid'},       // Used with Carts, Invoices
-      {'value': 'scheduled', 'label': 'scheduled'}, // Used with Invoices
-      {'value': 'initiated', 'label': 'initiated'}, // Used on Payments which are created but not authorized yet.
-      {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
-      {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
-      {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
-      {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
-      {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
-      {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
-    ];
+    var linkFn = function (scope, element, attrs) {
+        var defaultStatuses = [
+          { 'value': '', 'label': 'Any' },                // Export all
+          { 'value': 'unpaid', 'label': 'Unpaid' },       // Used with Carts, Invoices
+          { 'value': 'scheduled', 'label': 'scheduled' }, // Used with Invoices
+          { 'value': 'initiated', 'label': 'initiated' }, // Used on Payments which are created but not authorized yet.
+          { 'value': 'pending', 'label': 'pending' },     // Used with Payments, Carts, Invoices, Refunds, Orders
+          { 'value': 'completed', 'label': 'completed' }, // Used with Payments, Carts, Invoices, Refunds, Orders
+          { 'value': 'failed', 'label': 'failed' },       // Used with Payments, Carts, Invoices, Refunds
+          { 'value': 'cancelled', 'label': 'cancelled' }, // Used with Payments, Carts, Invoices, Orders
+          { 'value': 'refunded', 'label': 'refunded' },   // Used with Payments, Carts, Invoices, Orders
+          { 'value': 'retry', 'label': 'retry' }          // Used with Payments, Invoices
+        ];
 
-    scope.$watch(function() {
-      return scope.options.dataset;
-    },function(newValue) {
-      newValue = 'DoNotDisplayForNow';
-      switch(newValue) {
-        case 'orders':
-          scope.options.statusField = 'payment_status';
-          scope.options.status = 'completed';
-          scope.statusesLabel = 'Payment Status';
-          scope.statuses = [
-            {'value': '', 'label': 'Any'},                // Export all
-            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
-            {'value': 'refunded', 'label': 'refunded'}    // Used with Payments, Carts, Invoices, Orders
-          ];
-          break;
-        case 'invoices':
-          scope.options.statusField = 'payment_status';
-          scope.options.status = 'completed';
-          scope.statusesLabel = 'Payment Status';
-          scope.statuses = [
-            {'value': '', 'label': 'Any'},                // Export all
-            {'value': 'unpaid', 'label': 'Unpaid'},       // Used with Carts, Invoices
-            {'value': 'scheduled', 'label': 'scheduled'}, // Used with Invoices
-            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
-            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
-            {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
-            {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
-          ];
-          break;
-        case 'payments':
-          scope.options.statusField = 'status';
-          scope.options.status = 'completed';
-          scope.statusesLabel = 'Status';
-          scope.statuses = [
-            {'value': '', 'label': 'Any'},                // Export all
-            {'value': 'initiated', 'label': 'initiated'}, // Used on Payments which are created but not authorized yet.
-            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
-            {'value': 'cancelled', 'label': 'cancelled'}, // Used with Payments, Carts, Invoices, Orders
-            {'value': 'refunded', 'label': 'refunded'},   // Used with Payments, Carts, Invoices, Orders
-            {'value': 'retry', 'label': 'retry'}          // Used with Payments, Invoices
-          ];
-          break;
-        case 'refunds':
-          scope.options.statusField = 'status';
-          scope.options.status = 'completed';
-          scope.statusesLabel = 'Status';
-          scope.statuses = [
-            {'value': '', 'label': 'Any'},                // Export all
-            {'value': 'pending', 'label': 'pending'},     // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'completed', 'label': 'completed'}, // Used with Payments, Carts, Invoices, Refunds, Orders
-            {'value': 'failed', 'label': 'failed'},       // Used with Payments, Carts, Invoices, Refunds
-          ];
-          break;
-        case 'fees':
-        default:
-          scope.options.statusField = '';
-          scope.options.status = '';
-          scope.statusLabel = '';
-          scope.statuses = [];
-      };
-    });
-  };
+        scope.$watch(function () {
+            return scope.options.dataset;
+        }, function (newValue) {
+            newValue = 'DoNotDisplayForNow';
+            switch (newValue) {
+                case 'orders':
+                    scope.options.statusField = 'payment_status';
+                    scope.options.status = 'completed';
+                    scope.statusesLabel = 'Payment Status';
+                    scope.statuses = [
+                      { 'value': '', 'label': 'Any' },                // Export all
+                      { 'value': 'pending', 'label': 'pending' },     // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'completed', 'label': 'completed' }, // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'cancelled', 'label': 'cancelled' }, // Used with Payments, Carts, Invoices, Orders
+                      { 'value': 'refunded', 'label': 'refunded' }    // Used with Payments, Carts, Invoices, Orders
+                    ];
+                    break;
+                case 'invoices':
+                    scope.options.statusField = 'payment_status';
+                    scope.options.status = 'completed';
+                    scope.statusesLabel = 'Payment Status';
+                    scope.statuses = [
+                      { 'value': '', 'label': 'Any' },                // Export all
+                      { 'value': 'unpaid', 'label': 'Unpaid' },       // Used with Carts, Invoices
+                      { 'value': 'scheduled', 'label': 'scheduled' }, // Used with Invoices
+                      { 'value': 'pending', 'label': 'pending' },     // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'completed', 'label': 'completed' }, // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'failed', 'label': 'failed' },       // Used with Payments, Carts, Invoices, Refunds
+                      { 'value': 'cancelled', 'label': 'cancelled' }, // Used with Payments, Carts, Invoices, Orders
+                      { 'value': 'refunded', 'label': 'refunded' },   // Used with Payments, Carts, Invoices, Orders
+                      { 'value': 'retry', 'label': 'retry' }          // Used with Payments, Invoices
+                    ];
+                    break;
+                case 'payments':
+                    scope.options.statusField = 'status';
+                    scope.options.status = 'completed';
+                    scope.statusesLabel = 'Status';
+                    scope.statuses = [
+                      { 'value': '', 'label': 'Any' },                // Export all
+                      { 'value': 'initiated', 'label': 'initiated' }, // Used on Payments which are created but not authorized yet.
+                      { 'value': 'pending', 'label': 'pending' },     // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'completed', 'label': 'completed' }, // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'failed', 'label': 'failed' },       // Used with Payments, Carts, Invoices, Refunds
+                      { 'value': 'cancelled', 'label': 'cancelled' }, // Used with Payments, Carts, Invoices, Orders
+                      { 'value': 'refunded', 'label': 'refunded' },   // Used with Payments, Carts, Invoices, Orders
+                      { 'value': 'retry', 'label': 'retry' }          // Used with Payments, Invoices
+                    ];
+                    break;
+                case 'refunds':
+                    scope.options.statusField = 'status';
+                    scope.options.status = 'completed';
+                    scope.statusesLabel = 'Status';
+                    scope.statuses = [
+                      { 'value': '', 'label': 'Any' },                // Export all
+                      { 'value': 'pending', 'label': 'pending' },     // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'completed', 'label': 'completed' }, // Used with Payments, Carts, Invoices, Refunds, Orders
+                      { 'value': 'failed', 'label': 'failed' },       // Used with Payments, Carts, Invoices, Refunds
+                    ];
+                    break;
+                case 'fees':
+                default:
+                    scope.options.statusField = '';
+                    scope.options.status = '';
+                    scope.statusLabel = '';
+                    scope.statuses = [];
+            };
+        });
+    };
 
-  return {
-    restrict: 'A',
-    scope: true,
-    link: linkFn
-  }
+    return {
+        restrict: 'A',
+        scope: true,
+        link: linkFn
+    }
 });
 
 
@@ -3169,7 +3169,7 @@ app.service("SettingsService", [function ($http, $q) {
         settings.config.development = false;
 
         // For convenience, if you place a development flag in either one of the settings stubs (during local development), the app will be marked as running in development mode.
-        if (settings.account.development || settings.app.development || settings.style.development) {
+        if (settings.account.development || settings.app.development) {
 
             settings.config.development = true;
 
@@ -3433,113 +3433,113 @@ app.service("StorageService", ['appCache', function (appCache) {
 }]);
 
 
-app.controller("SettingsController", function($scope, SettingsService) {
-  $scope.settings = SettingsService.get();
+app.controller("SettingsController", function ($scope, SettingsService) {
+    $scope.settings = SettingsService.get();
 });
 
-app.controller("TimezonesController", function($scope, TimezonesService) {
-  $scope.timezones = TimezonesService.getTimezones();
+app.controller("TimezonesController", function ($scope, TimezonesService) {
+    $scope.timezones = TimezonesService.getTimezones();
 });
 
 app.controller("RootController",
   function ($scope, ApiService, $q, toCSV, saveFile, buildRootUrl, fetchData, SettingsService) {
-    var settings = SettingsService.get();
-    if (angular.isUndefined(settings.app.timezone) || settings.app.timezone.length <= 0)
-      settings.app.timezone = 'UTC';
-    if (angular.isUndefined(settings.app.exportFormat) || settings.app.exportFormat.length <= 0)
-      settings.app.exportFormat = 'csv';
-    if (angular.isUndefined(settings.app.dates) || settings.app.dates.length <= 0)
-      settings.app.dates = 'last_30';
-    if (angular.isUndefined(settings.app.dataset) || settings.app.dataset.length <= 0)
-      settings.app.dataset = 'orders';
+      var settings = SettingsService.get();
+      if (angular.isUndefined(settings.app.timezone) || settings.app.timezone.length <= 0)
+          settings.app.timezone = 'UTC';
+      if (angular.isUndefined(settings.app.exportFormat) || settings.app.exportFormat.length <= 0)
+          settings.app.exportFormat = 'csv';
+      if (angular.isUndefined(settings.app.dates) || settings.app.dates.length <= 0)
+          settings.app.dates = 'last_30';
+      if (angular.isUndefined(settings.app.dataset) || settings.app.dataset.length <= 0)
+          settings.app.dataset = 'orders';
 
-    // Set defaults
-    $scope.options = {
-      dataset: settings.app.dataset,
-      format: settings.app.exportFormat,
-      timezone: settings.app.timezone,
-      dates: settings.app.dates,
-      unravelFields: [{id: 'items', name: 'Items'}],
-      unravelField: 'items'
-    };
-    $scope.datepicker = {
-      status: {
-        date_start: {opened: false},
-        date_end: {opened: false}
-      },
-      options: {
-        startingDay: 1,
-        showWeeks: false,
-        initDate: new Date(),
-        yearRange: 10
-      },
-      open: function ($event, which) {
-        $scope.datepicker.status[which].opened = true;
+      // Set defaults
+      $scope.options = {
+          dataset: settings.app.dataset,
+          format: settings.app.exportFormat,
+          timezone: settings.app.timezone,
+          dates: settings.app.dates,
+          unravelFields: [{ id: 'items', name: 'Items' }],
+          unravelField: 'items'
+      };
+      $scope.datepicker = {
+          status: {
+              date_start: { opened: false },
+              date_end: { opened: false }
+          },
+          options: {
+              startingDay: 1,
+              showWeeks: false,
+              initDate: new Date(),
+              yearRange: 10
+          },
+          open: function ($event, which) {
+              $scope.datepicker.status[which].opened = true;
+          }
+      };
+
+      var _cancel = function () {
+          if (angular.isFunction($scope.cancelFunc)) {
+              $scope.cancelFunc();
+              $scope.cancelFunc = undefined;
+              return true;
+          }
+          return false;
       }
-    };
 
-    var _cancel = function() {
-      if (angular.isFunction($scope.cancelFunc)) {
-        $scope.cancelFunc();
-        $scope.cancelFunc = undefined;
-        return true;
+      var _export = function (options, datepicker) {
+          fetchData($scope, options, datepicker).then(function (data) {
+              if (!angular.isArray(data) || data.length <= 0) {
+                  $scope.error = { message: 'No results found' };
+                  return;
+              }
+
+              var formatted;
+              var type = 'text/' + options.format;
+              switch (options.format) {
+                  case 'csv':
+                      formatted = toCSV(data, options);
+                      break;
+                  case 'json':
+                      formatted = JSON.stringify(data, function (key, value) { return value; }, new Number(2));
+                      break;
+                  default:
+                      $scope.error = { message: 'Unknown export format' };
+                      return;
+              };
+
+              var date_range = options.dates;
+              if (date_range == 'custom') {
+                  date_range = datepicker.date_start.toISOString().substring(0, 10) + '_to_' +
+                    datepicker.date_end.toISOString().substring(0, 10);
+              }
+
+              var fileName = options.dataset;
+              if (angular.isDefined(options.status) && options.status.length > 0) fileName += '_' + options.status;
+              fileName += '_' + date_range + '.' + options.format;
+              saveFile(fileName, type, formatted);
+              $scope.successMessage = 'Export successful';
+          }, function (error) {
+              $scope.error = error;
+              _cancel();
+          });
+      };
+
+      $scope.export = function () {
+          $scope.clearMessages();
+          _export(angular.copy($scope.options), angular.copy($scope.datepicker));
+      };
+
+      $scope.cancel = function () {
+          if (_cancel()) {
+              $scope.successMessage = 'Canceled export.';
+          }
       }
-      return false;
-    }
 
-    var _export = function(options, datepicker) {
-      fetchData($scope, options, datepicker).then(function(data) {
-        if (!angular.isArray(data) || data.length <= 0) {
-          $scope.error = {message: 'No results found'};
-          return;
-        }
-
-        var formatted;
-        var type = 'text/' + options.format;
-        switch (options.format) {
-          case 'csv':
-            formatted = toCSV(data, options);
-            break;
-          case 'json':
-            formatted = JSON.stringify(data, function(key, value) {return value;}, new Number(2));
-            break;
-          default:
-            $scope.error = {message: 'Unknown export format'};
-            return;
-        };
-
-        var date_range = options.dates;
-        if (date_range == 'custom') {
-          date_range = datepicker.date_start.toISOString().substring(0, 10) + '_to_' +
-            datepicker.date_end.toISOString().substring(0, 10);
-        }
-
-        var fileName = options.dataset;
-        if (angular.isDefined(options.status) && options.status.length > 0) fileName += '_' + options.status;
-        fileName += '_' + date_range + '.' + options.format;
-        saveFile(fileName, type, formatted);
-        $scope.successMessage = 'Export successful';
-      }, function(error) {
-        $scope.error = error;
-        _cancel();
-      });
-    };
-
-    $scope.export = function() {
-      $scope.clearMessages();
-      _export(angular.copy($scope.options),angular.copy($scope.datepicker));
-    };
-
-    $scope.cancel = function() {
-      if (_cancel()) {
-        $scope.successMessage = 'Canceled export.';
-      }
-    }
-
-    $scope.clearMessages = function() {
-      $scope.successMessage = '';
-      $scope.error = {};
-    };
-});
+      $scope.clearMessages = function () {
+          $scope.successMessage = '';
+          $scope.error = {};
+      };
+  });
 
 //# sourceMappingURL=data-export.js.map

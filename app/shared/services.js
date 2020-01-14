@@ -1829,7 +1829,7 @@ app.service("SettingsService", [function ($http, $q) {
         settings.config.development = false;
 
         // For convenience, if you place a development flag in either one of the settings stubs (during local development), the app will be marked as running in development mode.
-        if (settings.account.development || settings.app.development || settings.style.development) {
+        if (settings.account.development || settings.app.development) {
 
             settings.config.development = true;
 
