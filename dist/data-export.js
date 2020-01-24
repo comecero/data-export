@@ -1183,7 +1183,7 @@ app.factory('saveFile', function (FileSaver, Blob) {
 });
 
 app.factory('toCSV', function () {
-    var doOrderFeeSummary = function (row) {
+    var doOrderItemFeeSummary = function (row) {
         var items_count = row['items_count'];
         var item_subtotal = row['items.settlement_subtotal'];
         var subtotal = row['settlement_subtotal'];
@@ -1194,7 +1194,7 @@ app.factory('toCSV', function () {
             if (key.match(/^fee_summary/)) delete row[key];
         }
     }
-    var doOrderSplitOrderDiscount = function (row) {
+    var doOrderItemSplitOrderDiscount = function (row) {
         var fields = ['discount', 'settlement_discount'];
         var items_count = row['items_count'];
         var item_subtotal = row['items.settlement_subtotal'];
@@ -1208,21 +1208,19 @@ app.factory('toCSV', function () {
         }
     }
     var doit = true;
-    var doRebillInfo = function (row) {
+    var doOrderItemRebillInfo = function (row) {
         row['new_sub'] = row['subscription'] == null && row['items.subscription'] != null ? 'true' : 'false';
         row['rebill'] = row['subscription'] != null && row['items.subscription'] != null ? 'true' : 'false';
     }
-    var doOrderCalcs = function (row, options) {
-        if (options.expand.indexOf('fee_summary') >= 0) {
-            doOrderFeeSummary(row);
-        }
-        doOrderSplitOrderDiscount(row);
-        doRebillInfo(row);
+    var doOrderItemCalcs = function (row, options) {
+        if (options.expand.indexOf('fee_summary') >= 0) doOrderItemFeeSummary(row);
+        doOrderItemSplitOrderDiscount(row);
+        doOrderItemRebillInfo(row);
     }
 
     var doCalcs = function (row, options) {
-        if (options.dataset == 'orders')
-            doOrderCalcs(row, options);
+        if (options.dataset == 'order_items')
+            doOrderItemCalcs(row, options);
     }
 
     var mergeNestedObjects = function (parent) {
