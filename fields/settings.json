@@ -406,10 +406,6 @@
                 "value": "America/Anchorage"
             },
             {
-                "display": "America/Anchorage",
-                "value": "America/Anchorage"
-            },
-            {
                 "display": "America/Anguilla",
                 "value": "America/Anguilla"
             },
@@ -558,10 +554,6 @@
                 "value": "America/Chicago"
             },
             {
-                "display": "America/Chicago",
-                "value": "America/Chicago"
-            },
-            {
                 "display": "America/Chihuahua",
                 "value": "America/Chihuahua"
             },
@@ -596,10 +588,6 @@
             {
                 "display": "America/Dawson_Creek",
                 "value": "America/Dawson_Creek"
-            },
-            {
-                "display": "America/Denver",
-                "value": "America/Denver"
             },
             {
                 "display": "America/Denver",
@@ -846,10 +834,6 @@
                 "value": "America/New_York"
             },
             {
-                "display": "America/New_York",
-                "value": "America/New_York"
-            },
-            {
                 "display": "America/Nipigon",
                 "value": "America/Nipigon"
             },
@@ -890,10 +874,6 @@
                 "value": "America/Phoenix"
             },
             {
-                "display": "America/Phoenix",
-                "value": "America/Phoenix"
-            },
-            {
                 "display": "America/Port_of_Spain",
                 "value": "America/Port_of_Spain"
             },
@@ -908,10 +888,6 @@
             {
                 "display": "America/Porto_Velho",
                 "value": "America/Porto_Velho"
-            },
-            {
-                "display": "America/Puerto_Rico",
-                "value": "America/Puerto_Rico"
             },
             {
                 "display": "America/Puerto_Rico",
@@ -1916,10 +1892,6 @@
             {
                 "display": "Pacific/Guam",
                 "value": "Pacific/Guam"
-            },
-            {
-                "display": "Pacific/Honolulu",
-                "value": "Pacific/Honolulu"
             },
             {
                 "display": "Pacific/Honolulu",
