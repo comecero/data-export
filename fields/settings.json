@@ -17,6 +17,10 @@
                 "value": "orders"
             },
             {
+                "display": "Order Items",
+                "value": "order_items"
+            },
+            {
                 "display": "Invoices",
                 "value": "invoices"
             },
@@ -756,10 +760,6 @@
             {
                 "display": "America/Lima",
                 "value": "America/Lima"
-            },
-            {
-                "display": "America/Los_Angeles",
-                "value": "America/Los_Angeles"
             },
             {
                 "display": "America/Los_Angeles",
